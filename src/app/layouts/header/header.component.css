@@ -1,0 +1,12 @@
+header {
+  min-height: 100px;
+}
+
+.logo {
+  font-size: 1.5em;
+  text-decoration: none;
+}
+
+.logo:hover {
+  text-decoration: underline;
+}
