@@ -1,8 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { CategoryService } from '../services/category/category.service';
-import { Category } from '../models/category';
+import { Category, CategoryFromFirebase } from '../models/category';
 
 
 @Component({
@@ -10,10 +10,18 @@ import { Category } from '../models/category';
   templateUrl: './categories.component.html',
   styleUrls: ['./categories.component.css']
 })
-export class CategoriesComponent {
+export class CategoriesComponent implements OnInit {
   @ViewChild('categoryForm') categoryForm!: NgForm
 
+  categoryArray: CategoryFromFirebase[] = []
+
   constructor(private categoryService: CategoryService) {}
+
+  ngOnInit(): void {
+    this.categoryService.getCategoriesList().subscribe(val => {
+      this.categoryArray = val
+    })
+  }
 
   onSubmit(): void {
     const data: Category = {
@@ -21,5 +29,7 @@ export class CategoriesComponent {
     }
 
     this.categoryService.saveData(data)
+
+    this.categoryForm.reset()
   }
 }
