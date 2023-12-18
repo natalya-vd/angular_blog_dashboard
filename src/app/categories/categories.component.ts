@@ -28,6 +28,14 @@ export class CategoriesComponent {
       .add(data)
       .then(docRef => {
         console.log(docRef)
+        // this.firestore
+        // .doc(`categories/${docRef.id}`)
+        // .collection('subcategories')
+        // .add(subCategoryData)
+        // .then(subDocRef => {
+        //   console.log(subDocRef)
+        // })
+
         this.firestore
           .collection('categories')
           .doc(docRef.id)
