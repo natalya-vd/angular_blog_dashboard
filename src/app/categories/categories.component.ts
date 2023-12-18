@@ -1,10 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 
-interface Category {
-  category: string
-}
+import { CategoryService } from '../services/category/category.service';
+import { Category } from '../models/category';
+
 
 @Component({
   selector: 'app-categories',
@@ -14,39 +13,13 @@ interface Category {
 export class CategoriesComponent {
   @ViewChild('categoryForm') categoryForm!: NgForm
 
-  constructor(private firestore: AngularFirestore) {}
+  constructor(private categoryService: CategoryService) {}
 
   onSubmit(): void {
     const data: Category = {
       category: this.categoryForm.value.category
     }
-    const subCategoryData = {
-      subcategory: 'subcategory1'
-    }
-    this.firestore
-      .collection<Category>('categories')
-      .add(data)
-      .then(docRef => {
-        console.log(docRef)
-        // this.firestore
-        // .doc(`categories/${docRef.id}`)
-        // .collection('subcategories')
-        // .add(subCategoryData)
-        // .then(subDocRef => {
-        //   console.log(subDocRef)
-        // })
 
-        this.firestore
-          .collection('categories')
-          .doc(docRef.id)
-          .collection('subcategories')
-          .add(subCategoryData)
-          .then(subDocRef => {
-            console.log(subDocRef)
-          })
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    this.categoryService.saveData(data)
   }
 }
