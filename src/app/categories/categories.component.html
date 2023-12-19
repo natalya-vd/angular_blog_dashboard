@@ -4,18 +4,19 @@
       <h3 class="text-center text-primary-theme">New Categories</h3>
       <p class="text-center mb-5">you can add new categories from here!</p>
 
-      <form class="row text-center" #categoryForm="ngForm" (ngSubmit)="onSubmit()">
+      <form class="row text-center" #categoryForm="ngForm" (ngSubmit)="onSubmit()" data-testid="form">
         <div class="col-md-10">
           <input type="text" name="category" class="form-control shadow-effect"
             [ngClass]="{'is-invalid': newCategory.touched && newCategory.invalid}" placeholder="Add New Categories"
-            #newCategory="ngModel" ngModel required>
+            #newCategory="ngModel" ngModel required data-testid="new-category">
           <p class="alert alert-danger" *ngIf="newCategory.touched && newCategory.invalid">
             Category field is required
           </p>
         </div>
 
         <div class="col-md-2 d-grid">
-          <button type="submit" class="btn btn-block btn-info mb-2 btn-theme" [disabled]="categoryForm.invalid">Add
+          <button type="submit" class="btn btn-block btn-info mb-2 btn-theme" [disabled]="categoryForm.invalid"
+            data-testid="button-submit">Add
             Category</button>
         </div>
       </form>
@@ -38,7 +39,7 @@
             </thead>
 
             <tbody>
-              <tr *ngFor="let category of categoryArray; let i = index">
+              <tr *ngFor="let category of categoryArray; let i = index" data-testid="row-category">
                 <td>{{i + 1}}</td>
                 <td>{{category.data.category}}</td>
                 <td></td>

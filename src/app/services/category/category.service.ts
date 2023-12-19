@@ -28,15 +28,14 @@ export class CategoryService {
       }))
   }
 
-  saveData(data: Category): void {
-    this.firestore
-      .collection<Category>('categories')
-      .add(data)
-      .then(docRef => {
-        this.toastrService.success('Data Insert Successfully!')
-      })
-      .catch(err => {
-        console.log(err)
-      })
+  async saveData(data: Category): Promise<void> {
+    try {
+      const docRef = await this.firestore
+        .collection<Category>('categories')
+        .add(data);
+      this.toastrService.success('Data Insert Successfully!');
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
