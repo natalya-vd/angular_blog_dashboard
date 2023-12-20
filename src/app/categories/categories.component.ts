@@ -14,6 +14,9 @@ export class CategoriesComponent implements OnInit {
   @ViewChild('categoryForm') categoryForm!: NgForm
 
   categoryArray: CategoryFromFirebase[] = []
+  formCategoryValue!: string
+  mode: 'add' | 'edit' = 'add';
+  updateCategoryId: string | null = null
 
   constructor(private categoryService: CategoryService) {}
 
@@ -23,13 +26,42 @@ export class CategoriesComponent implements OnInit {
     })
   }
 
+  get title() {
+    const statuses = {
+      add: 'New Categories',
+      edit: 'Edit Category'
+    }
+    return statuses[this.mode] ?? ''
+  }
+
+  get titleButton() {
+    const statuses = {
+      add: 'Add',
+      edit: 'Edit'
+    }
+    return statuses[this.mode] ?? ''
+  }
+
   onSubmit(): void {
     const data: Category = {
       category: this.categoryForm.value.category
     }
 
-    this.categoryService.saveData(data)
+    if(this.mode === 'add' ) {
+      this.categoryService.saveData(data)
+    } else if(this.mode === 'edit') {
+      if(this.updateCategoryId) {
+        this.categoryService.updateData(this.updateCategoryId, data)
+        this.mode = 'add'
+      }
+    }
 
     this.categoryForm.reset()
+  }
+
+  onEdit(category: CategoryFromFirebase) {
+    this.formCategoryValue = category.data.category
+    this.mode = 'edit';
+    this.updateCategoryId = category.id
   }
 }

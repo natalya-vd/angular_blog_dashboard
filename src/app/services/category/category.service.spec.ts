@@ -6,6 +6,18 @@ import { ToastrService } from 'ngx-toastr';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Category, CategoryFromFirebase } from 'src/app/models/category';
 
+class AngularFirestoreDocumentMock {
+  update(data: Category) {
+    return new Promise((resolve, reject) => {
+      if(data.category === 'Error') {
+        return reject('Error')
+      }
+
+      return resolve({id: '1'})
+    })
+  }
+}
+
 class AngularFirestoreCollectionMock {
   snapshotChanges() {
     return of([
@@ -53,6 +65,10 @@ class AngularFirestoreCollectionMock {
 
       return resolve({id: '1'})
     })
+  }
+
+  doc(id: string) {
+    return new AngularFirestoreDocumentMock()
   }
 }
 
@@ -155,6 +171,37 @@ describe('CategoryService', () => {
         expect(data).toEqual(categoriesData)
         done()
       })
+    })
+  })
+
+  describe('updateData()', () => {
+    it('should call firebase methods', async() => {
+      const spyFirebase = spyOn(firestoreMock, 'collection').and.callThrough()
+      const spyUpdate = spyOn(AngularFirestoreDocumentMock.prototype, 'update').and.callThrough()
+      const data = {category: 'Category 1'}
+
+      await categoryService.updateData('1', data)
+
+      expect(spyFirebase).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledWith(data)
+    })
+
+    it('should call toastrService.success for success add', async() => {
+
+      await categoryService.updateData('1', {category: 'Category 1'})
+
+      expect(toastrServiceSpy.success).toHaveBeenCalledTimes(1);
+      expect(toastrServiceSpy.success).toHaveBeenCalledWith('Data Update Successfully!');
+    })
+
+    it('should call console.log for error add', async() => {
+      const spyLog = spyOn(window.console, 'log')
+
+      await categoryService.updateData('1', {category: 'Error'})
+
+      expect(spyLog).toHaveBeenCalledTimes(1);
+      expect(spyLog).toHaveBeenCalledWith('Error');
     })
   })
 });

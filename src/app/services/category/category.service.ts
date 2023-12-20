@@ -10,12 +10,13 @@ import { Category, CategoryFromFirebase } from 'src/app/models/category';
   providedIn: 'root'
 })
 export class CategoryService {
+  keyCollection = 'categories';
 
   constructor(private firestore: AngularFirestore, private toastrService: ToastrService) { }
 
   getCategoriesList(): Observable<CategoryFromFirebase[]> {
     return this.firestore
-      .collection<Category>('categories')
+      .collection<Category>(this.keyCollection)
       .snapshotChanges()
       .pipe(map((actions) => {
         return actions.map(a => {
@@ -31,11 +32,24 @@ export class CategoryService {
   async saveData(data: Category): Promise<void> {
     try {
       const docRef = await this.firestore
-        .collection<Category>('categories')
+        .collection<Category>(this.keyCollection)
         .add(data);
       this.toastrService.success('Data Insert Successfully!');
     } catch (err) {
       console.log(err);
+    }
+  }
+
+  async updateData(id: string, newValue: Category): Promise<void> {
+    try {
+      await this.firestore
+      .collection<Category>(this.keyCollection)
+      .doc(id)
+      .update(newValue)
+
+      this.toastrService.success('Data Update Successfully!');
+    } catch(err) {
+      console.log(err)
     }
   }
 }
