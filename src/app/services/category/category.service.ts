@@ -20,7 +20,6 @@ export class CategoryService {
       .snapshotChanges()
       .pipe(map((actions) => {
         return actions.map(a => {
-          console.log(a)
           const data = a.payload.doc.data()
           const id = a.payload.doc.id
 
@@ -43,11 +42,22 @@ export class CategoryService {
   async updateData(id: string, newValue: Category): Promise<void> {
     try {
       await this.firestore
-      .collection<Category>(this.keyCollection)
-      .doc(id)
+      .doc<Category>(`${this.keyCollection}/${id}`)
       .update(newValue)
 
       this.toastrService.success('Data Update Successfully!');
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
+  async deleteData(id: string): Promise<void> {
+    try {
+      await this.firestore
+        .doc<Category>(`${this.keyCollection}/${id}`)
+        .delete();
+
+      this.toastrService.success('Data Deleted!');
     } catch(err) {
       console.log(err)
     }

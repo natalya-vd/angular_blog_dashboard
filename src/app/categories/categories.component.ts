@@ -59,9 +59,17 @@ export class CategoriesComponent implements OnInit {
     this.categoryForm.reset()
   }
 
-  onEdit(category: CategoryFromFirebase) {
+  onEdit(category: CategoryFromFirebase): void {
     this.formCategoryValue = category.data.category
     this.mode = 'edit';
     this.updateCategoryId = category.id
+  }
+
+  onDelete(category: CategoryFromFirebase): void {
+    const isDelete = confirm('Do you want to delete category?')
+
+    if(isDelete) {
+      this.categoryService.deleteData(category.id);
+    }
   }
 }

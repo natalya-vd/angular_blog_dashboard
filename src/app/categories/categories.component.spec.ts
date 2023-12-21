@@ -29,7 +29,7 @@ describe('CategoriesComponent', () => {
       },
     ]
 
-    const categoryServiceSpyObj = jasmine.createSpyObj('CategoryService', ['saveData', 'getCategoriesList', 'updateData'])
+    const categoryServiceSpyObj = jasmine.createSpyObj('CategoryService', ['saveData', 'getCategoriesList', 'updateData', 'deleteData'])
 
     await TestBed
       .configureTestingModule({
@@ -118,6 +118,27 @@ describe('CategoriesComponent', () => {
     })
   })
 
+  describe('onDelete()', () => {
+    it('should call method categoryService deleteData is confirm true', () => {
+      const confirmSpy = spyOn(window, 'confirm').and.returnValue(true)
+
+      component.onDelete(categoriesData[0]);
+
+      expect(confirmSpy).toHaveBeenCalled();
+      expect(categoryServiceSpy.deleteData).toHaveBeenCalledTimes(1)
+      expect(categoryServiceSpy.deleteData).toHaveBeenCalledWith(categoriesData[0].id)
+    })
+
+    it('should do not call method categoryService deleteData is confirm false', () => {
+      const confirmSpy = spyOn(window, 'confirm').and.returnValue(false)
+
+      component.onDelete(categoriesData[0]);
+
+      expect(confirmSpy).toHaveBeenCalled();
+      expect(categoryServiceSpy.deleteData).not.toHaveBeenCalled()
+    })
+  })
+
   describe('HTML template', () => {
     it('should button disabled true', () => {
       const button = findEl(fixture, 'button-submit').nativeElement as HTMLButtonElement;
@@ -177,6 +198,21 @@ describe('CategoriesComponent', () => {
       }
 
       expect(spyOnEdit).toHaveBeenCalledTimes(categoriesData.length);
+    })
+
+    it('should call onDelete method when click button delete', () => {
+      const spyOnDelete = spyOn(component, 'onDelete');
+      const elementsButtons = findEls(fixture, 'button-delete');
+
+      for(let i = 0; i < elementsButtons.length; i++) {
+        const element = elementsButtons[i]
+        const event = makeClickEvent(element.nativeElement);
+        element.triggerEventHandler('click', event);
+
+        expect(spyOnDelete).toHaveBeenCalledWith(categoriesData[i]);
+      }
+
+      expect(spyOnDelete).toHaveBeenCalledTimes(categoriesData.length);
     })
   })
 });

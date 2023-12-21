@@ -16,6 +16,10 @@ class AngularFirestoreDocumentMock {
       return resolve({id: '1'})
     })
   }
+
+  delete(): Promise<void> {
+    return Promise.resolve();
+  }
 }
 
 class AngularFirestoreCollectionMock {
@@ -67,14 +71,18 @@ class AngularFirestoreCollectionMock {
     })
   }
 
-  doc(id: string) {
+  doc(_id: string) {
     return new AngularFirestoreDocumentMock()
   }
 }
 
 class AngularFirestoreMock {
-  collection(path: string) {
+  collection(_path: string) {
     return new AngularFirestoreCollectionMock()
+  }
+
+  doc(_id: string) {
+    return new AngularFirestoreDocumentMock()
   }
 }
 
@@ -176,7 +184,7 @@ describe('CategoryService', () => {
 
   describe('updateData()', () => {
     it('should call firebase methods', async() => {
-      const spyFirebase = spyOn(firestoreMock, 'collection').and.callThrough()
+      const spyFirebase = spyOn(firestoreMock, 'doc').and.callThrough()
       const spyUpdate = spyOn(AngularFirestoreDocumentMock.prototype, 'update').and.callThrough()
       const data = {category: 'Category 1'}
 
@@ -187,15 +195,14 @@ describe('CategoryService', () => {
       expect(spyUpdate).toHaveBeenCalledWith(data)
     })
 
-    it('should call toastrService.success for success add', async() => {
-
+    it('should call toastrService.success when success add', async() => {
       await categoryService.updateData('1', {category: 'Category 1'})
 
       expect(toastrServiceSpy.success).toHaveBeenCalledTimes(1);
       expect(toastrServiceSpy.success).toHaveBeenCalledWith('Data Update Successfully!');
     })
 
-    it('should call console.log for error add', async() => {
+    it('should call console.log when error add', async() => {
       const spyLog = spyOn(window.console, 'log')
 
       await categoryService.updateData('1', {category: 'Error'})
@@ -203,5 +210,35 @@ describe('CategoryService', () => {
       expect(spyLog).toHaveBeenCalledTimes(1);
       expect(spyLog).toHaveBeenCalledWith('Error');
     })
+  })
+
+  describe('deleteData()', () => {
+    it('should call firebase methods', async() => {
+      const spyFirebase = spyOn(firestoreMock, 'doc').and.callThrough()
+      const spyDelete = spyOn(AngularFirestoreDocumentMock.prototype, 'delete').and.callThrough();
+
+      await categoryService.deleteData('1');
+
+      expect(spyFirebase).toHaveBeenCalledTimes(1);
+      expect(spyDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call toastrService.success when success delete', async() => {
+      await categoryService.deleteData('1');
+
+      expect(toastrServiceSpy.success).toHaveBeenCalledTimes(1);
+      expect(toastrServiceSpy.success).toHaveBeenCalledWith('Data Deleted!');
+    });
+
+    it('should call console.log when error delete', async() => {
+      const spyLog = spyOn(window.console, 'log')
+      spyOn(AngularFirestoreDocumentMock.prototype, 'delete').and.throwError('Error');
+
+      await categoryService.deleteData('1');
+
+      expect(spyLog).toHaveBeenCalledTimes(1);
+      expect(spyLog).toHaveBeenCalledWith(new Error('Error'));
+
+    });
   })
 });
