@@ -1,1 +1,68 @@
-<p>new-post works!</p>
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <h3 class="text-primary-theme">Add New Post</h3>
+      <p class="mb-5 text-theme">You can add your new post here</p>
+
+      <form>
+        <div class="row">
+          <div class="col-md-7">
+            <div class="card shadow-effect">
+              <div class="card-body">
+                <div class="mb-2">
+                  <label>Title</label>
+                  <input type="text" class="form-control shadow-effect">
+                </div>
+
+                <div class="mb-2">
+                  <label>Permalink</label>
+                  <input type="text" class="form-control shadow-effect">
+                </div>
+
+                <div>
+                  <label>Excerpt</label>
+                  <textarea cols="30" rows="10" class="form-control shadow-effect"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-5">
+            <div class="card shadow-effect">
+              <div class="card-body">
+                <div class="mb-2">
+                  <label for="">Please Select a post category</label>
+                  <select class="form-control shadow-effect">
+                    <option value="" disabled>Please select a category</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Post Image</label>
+                  <input type="file" class="form-control shadow-effect">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3 mb-5">
+          <div class="col-md-12">
+            <div class="card shadow-effect">
+              <div class="card-body">
+                <div>
+                  <label>Content</label>
+                  <textarea cols="30" rows="10" class="form-control shadow-effect"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 text-center my-5 d-flex justify-content-center">
+            <button type="submit" class="btn btn-info btn-theme">Save Post</button>
+            <button type="button" class="btn btn-warning ms-3 text-white" routerLink="/posts">Back To Post</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
