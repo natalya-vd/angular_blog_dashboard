@@ -34,13 +34,18 @@
               <div class="card-body">
                 <div class="mb-2">
                   <label for="">Please Select a post category</label>
-                  <select class="form-control shadow-effect">
-                    <option value="" disabled>Please select a category</option>
+                  <select class="form-select shadow-effect">
+                    <option selected disabled>Please select a category</option>
+                    <option *ngFor="let category of categories" [value]="category.id" data-testid="option-category">
+                      {{category.data.category}}
+                    </option>
                   </select>
                 </div>
                 <div>
                   <label>Post Image</label>
-                  <input type="file" class="form-control shadow-effect">
+                  <img [src]="imgSrc" class="form-control img-fluid">
+                  <input type="file" class="form-control shadow-effect" accept="image/*" (change)="showPreview($event)"
+                    data-testid="image-preview">
                 </div>
               </div>
             </div>
