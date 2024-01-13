@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CategoryFromFirebase } from 'src/app/models/category';
+import { Post } from 'src/app/models/post';
 import { CategoryService } from 'src/app/services/category/category.service';
 
 @Component({
@@ -8,12 +10,22 @@ import { CategoryService } from 'src/app/services/category/category.service';
   styleUrls: ['./new-post.component.css']
 })
 export class NewPostComponent implements OnInit {
-  permalink: string = '';
   imgSrc: any = './assets/placeholder-image.png';
   selectedImg: any;
   categories: CategoryFromFirebase[] = [];
 
-  constructor(private categoryService: CategoryService) {}
+  postForm: FormGroup
+
+  constructor(private categoryService: CategoryService, private formBuilder: FormBuilder) {
+    this.postForm = this.formBuilder.group({
+      title: ['', [Validators.required, Validators.minLength(10)]],
+      permalink: [{value: '', disabled: true}, Validators.required],
+      excerpt: ['', [Validators.required, Validators.minLength(50)]],
+      category: ['', Validators.required],
+      postImg: ['', Validators.required],
+      content: ['', Validators.required]
+    })
+  }
 
   ngOnInit(): void {
     this.categoryService.getCategoriesList().subscribe(val => {
@@ -21,10 +33,14 @@ export class NewPostComponent implements OnInit {
     })
   }
 
+  get formControls() {
+    return this.postForm.controls
+  }
+
   onTitleChange($event: Event) {
     const input = $event.target as HTMLInputElement
     const title = input.value
-    this.permalink = title.replace(/\s/g, '-')
+    this.postForm.controls['permalink'].setValue(title.replace(/\s/g, '-'))
   }
 
   showPreview($event: Event) {
@@ -39,5 +55,29 @@ export class NewPostComponent implements OnInit {
       reader.readAsDataURL(input.files[0])
       this.selectedImg = input.files[0]
     }
+  }
+
+  onSubmit() {
+    if(this.postForm.invalid) return
+
+    const category = this.categories.find((category) => category.id === this.postForm.value.category)
+
+    const postData: Post = {
+      title: this.postForm.value.title,
+      permalink: this.postForm.getRawValue().permalink,
+      category: {
+        categoryId: category?.id ?? '',
+        category: category?.data.category ?? ''
+      },
+      postImgPath: '',
+      excerpt: this.postForm.value.excerpt,
+      content: this.postForm.value.content,
+      isFeatured: false,
+      views: 0,
+      status: 'new',
+      createdAt: new Date()
+    }
+
+    console.log(postData)
   }
 }
