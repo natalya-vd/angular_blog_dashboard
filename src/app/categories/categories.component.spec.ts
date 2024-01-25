@@ -6,6 +6,7 @@ import { CategoriesComponent } from './categories.component';
 import { CategoryService } from '../services/category/category.service';
 import { CategoryFromFirebase } from '../models/category';
 import { click, expectText, findEl, findEls, makeClickEvent, setFieldValue } from '../spec-helpers/element.spec-helper';
+import { createCategoriesDataFromFirebase } from '../spec-helpers/category.data';
 
 describe('CategoriesComponent', () => {
   let component: CategoriesComponent;
@@ -14,20 +15,7 @@ describe('CategoriesComponent', () => {
   let categoriesData: CategoryFromFirebase[] = []
 
   beforeEach(async () => {
-    categoriesData = [
-      {
-        id: '1',
-        data: {category: 'Category 1'}
-      },
-      {
-        id: '2',
-        data: {category: 'Category 2'}
-      },
-      {
-        id: '3',
-        data: {category: 'Category 3'}
-      },
-    ]
+    categoriesData = createCategoriesDataFromFirebase()
 
     const categoryServiceSpyObj = jasmine.createSpyObj('CategoryService', ['saveData', 'getCategoriesList', 'updateData', 'deleteData'])
 

@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { CategoryFromFirebase } from 'src/app/models/category';
 import { AngularFirestoreCollectionMock, AngularFirestoreDocumentMock, createFirestoreMock } from 'src/app/spec-helpers/firestore-mock';
+import { createCategoriesDataFromFirebase } from 'src/app/spec-helpers/category.data';
 
 
 
@@ -15,20 +16,7 @@ describe('CategoryService', () => {
   let categoriesData: CategoryFromFirebase[] = []
 
   beforeEach(() => {
-    categoriesData = [
-      {
-        id: '1',
-        data: {category: 'Category 1'}
-      },
-      {
-        id: '2',
-        data: {category: 'Category 2'}
-      },
-      {
-        id: '3',
-        data: {category: 'Category 3'}
-      },
-    ]
+    categoriesData = createCategoriesDataFromFirebase()
 
     const toastrServiceSpyObj = jasmine.createSpyObj('ToastrService', ['success'])
 

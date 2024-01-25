@@ -10,6 +10,8 @@ import { of } from 'rxjs';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { PostService } from 'src/app/services/post/post.service';
 import { Post } from 'src/app/models/post';
+import { createCategoriesDataFromFirebase } from 'src/app/spec-helpers/category.data';
+import { createPostDataFromForm } from 'src/app/spec-helpers/post.data';
 
 describe('NewPostComponent', () => {
   let component: NewPostComponent;
@@ -29,35 +31,8 @@ describe('NewPostComponent', () => {
   }
 
   beforeEach(() => {
-    categoriesData = [
-      {
-        id: '1',
-        data: {category: 'Category 1'}
-      },
-      {
-        id: '2',
-        data: {category: 'Category 2'}
-      },
-      {
-        id: '3',
-        data: {category: 'Category 3'}
-      },
-    ]
-    postData = {
-      title: 'Cool title',
-      permalink: 'Cool-title',
-      category: {
-        categoryId: categoriesData[0].id,
-        category: categoriesData[0].data.category
-      },
-      postImgPath: '',
-      excerpt: 'excerpt jkdjkjfdkg fkdjfkjfkfdjkgjkfdj fkdkfdkfkdfkdkfdflkdlfkdfkfldklf',
-      content: 'content',
-      isFeatured: false,
-      views: 0,
-      status: 'new',
-      createdAt: new Date()
-    }
+    categoriesData = createCategoriesDataFromFirebase()
+    postData = createPostDataFromForm()
 
     const categoryServiceSpyObj = jasmine.createSpyObj('CategoryService', ['getCategoriesList'])
     const postServiceSpyObj = jasmine.createSpyObj('PostService', ['uploadImage'])

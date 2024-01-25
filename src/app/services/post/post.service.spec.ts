@@ -5,81 +5,37 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 
 import { PostService } from './post.service';
 import { AngularFireStorageMock, AngularFireStorageReferenceMock, AngularFirestoreCollectionMock, createFireStorageMock, createFirestoreMock } from 'src/app/spec-helpers/firestore-mock';
-import { PostFromFirebase } from 'src/app/models/post';
+import { Post, PostFromFirebase, PostFromFirebaseRaw } from 'src/app/models/post';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
+import { createPostDataFromForm, createPostsDataFromFirebaseRaw } from 'src/app/spec-helpers/post.data';
+import { PostAdapterService } from './post.adapter.service';
 
 describe('PostService', () => {
   let postService: PostService;
+  let postAdapterService: PostAdapterService;
   let firestoreMock: AngularFirestore
   let fireStorageMock: AngularFireStorage
   let toastrServiceSpy: jasmine.SpyObj<ToastrService>
-  let postData: PostFromFirebase[] = []
+  let routerSpy: jasmine.SpyObj<Router>
+  let postDataRaw: PostFromFirebaseRaw[] = []
+  let postFormData: Post
 
   beforeEach(() => {
-    postData = [
-      {
-        id: '1',
-        data: {
-          title: 'Title 1',
-          permalink: 'Title-1',
-          category: {
-            categoryId: '1',
-            category: 'Category 1'
-          },
-          postImgPath: '',
-          excerpt: 'excerpt',
-          content: 'content',
-          isFeatured: false,
-          views: 0,
-          status: 'new',
-          createdAt: new Date()
-        }
-      },
-      {
-        id: '2',
-        data: {
-          title: 'Title 2',
-          permalink: 'Title-2',
-          category: {
-            categoryId: '2',
-            category: 'Category 2'
-          },
-          postImgPath: '',
-          excerpt: 'excerpt',
-          content: 'content',
-          isFeatured: false,
-          views: 0,
-          status: 'new',
-          createdAt: new Date()
-        }
-      },
-      {
-        id: '3',
-        data: {
-          title: 'Title 3',
-          permalink: 'Title-3',
-          category: {
-            categoryId: '3',
-            category: 'Category 3'
-          },
-          postImgPath: '',
-          excerpt: 'excerpt',
-          content: 'content',
-          isFeatured: false,
-          views: 0,
-          status: 'new',
-          createdAt: new Date()
-        }
-      },
-    ]
+    postDataRaw = createPostsDataFromFirebaseRaw()
+    postFormData = createPostDataFromForm()
 
     const toastrServiceSpyObj = jasmine.createSpyObj('ToastrService', ['success'])
+    const routerSpyObj = jasmine.createSpyObj('Router', ['navigate'])
 
     TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
       providers: [
         PostService,
+        PostAdapterService,
         {
           provide: AngularFirestore,
-          useValue: createFirestoreMock(postData)
+          useValue: createFirestoreMock(postDataRaw)
         },
         {
           provide: AngularFireStorage,
@@ -88,14 +44,20 @@ describe('PostService', () => {
         {
           provide: ToastrService,
           useValue: toastrServiceSpyObj
+        },
+        {
+          provide: Router,
+          useValue: routerSpyObj
         }
       ]
     });
 
     postService = TestBed.inject(PostService);
+    postAdapterService = TestBed.inject(PostAdapterService);
     firestoreMock = TestBed.inject(AngularFirestore);
     fireStorageMock = TestBed.inject(AngularFireStorage);
     toastrServiceSpy = TestBed.inject(ToastrService) as jasmine.SpyObj<ToastrService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   it('should be created', () => {
@@ -107,25 +69,32 @@ describe('PostService', () => {
       const spyFirebase = spyOn(firestoreMock, 'collection').and.callThrough()
       const spyAdd = spyOn(AngularFirestoreCollectionMock.prototype, 'add').and.callThrough()
 
-      await postService.saveData(postData[0].data)
+      await postService.saveData(postFormData)
 
       expect(spyFirebase).toHaveBeenCalledTimes(1);
       expect(spyAdd).toHaveBeenCalledTimes(1);
-      expect(spyAdd).toHaveBeenCalledWith(postData[0].data)
+      expect(spyAdd).toHaveBeenCalledWith(postFormData)
     });
 
     it('should call toastrService.success for success add', async () => {
-      await postService.saveData(postData[0].data)
+      await postService.saveData(postFormData)
 
       expect(toastrServiceSpy.success).toHaveBeenCalledTimes(1);
       expect(toastrServiceSpy.success).toHaveBeenCalledWith('Data Insert Successfully');
+    });
+
+    it('should navigate in "posts" for success add', async () => {
+      await postService.saveData(postFormData)
+
+      expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/posts']);
     });
 
     it('should call console.log for error add', async () => {
       const spyLog = spyOn(window.console, 'log')
       spyOn(AngularFirestoreCollectionMock.prototype, 'add').and.throwError('Error')
 
-      await postService.saveData(postData[0].data)
+      await postService.saveData(postFormData)
 
       expect(spyLog).toHaveBeenCalledTimes(1);
       expect(spyLog).toHaveBeenCalledWith(new Error('Error'));
@@ -137,7 +106,7 @@ describe('PostService', () => {
       const spyFireStorage = spyOn(fireStorageMock, 'upload').and.callThrough();
       const mockFile = new File([''], 'filename', { type: 'jpg' });
 
-      await postService.uploadImage(mockFile, postData[0].data);
+      await postService.uploadImage(mockFile, postFormData);
 
       expect(spyFireStorage).toHaveBeenCalledTimes(1);
     });
@@ -147,7 +116,7 @@ describe('PostService', () => {
       const spyGetDownloadURL = spyOn(AngularFireStorageReferenceMock.prototype, 'getDownloadURL').and.callThrough()
       const mockFile = new File([''], 'filename', { type: 'jpg' });
 
-      await postService.uploadImage(mockFile, postData[0].data);
+      await postService.uploadImage(mockFile, postFormData);
 
       expect(spyFireStorage).toHaveBeenCalledTimes(1);
       expect(spyGetDownloadURL).toHaveBeenCalledTimes(1);
@@ -158,7 +127,7 @@ describe('PostService', () => {
       const spySaveData = spyOn(postService, 'saveData').and.callThrough()
       const mockFile = new File([''], 'filename', { type: 'jpg' });
 
-      await postService.uploadImage(mockFile, postData[0].data);
+      await postService.uploadImage(mockFile, postFormData);
 
       expect(spySaveData).toHaveBeenCalledTimes(1);
     });
@@ -168,10 +137,35 @@ describe('PostService', () => {
       spyOn(AngularFireStorageMock.prototype, 'upload').and.throwError('Error')
       const mockFile = new File([''], 'filename', { type: 'jpg' });
 
-      await postService.uploadImage(mockFile, postData[0].data);
+      await postService.uploadImage(mockFile, postFormData);
 
       expect(spyLog).toHaveBeenCalledTimes(1);
       expect(spyLog).toHaveBeenCalledWith(new Error('Error'));
     });
+  })
+
+  describe('getPostsList()', () => {
+    it('should call firebase methods', () => {
+      const spyFirebase = spyOn(firestoreMock, 'collection').and.callThrough()
+      const spySnapshotChanges = spyOn(AngularFirestoreCollectionMock.prototype, 'snapshotChanges').and.callThrough()
+
+      postService.getPostsList()
+
+      expect(spyFirebase).toHaveBeenCalledTimes(1);
+      expect(spySnapshotChanges).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return observable with categories', (done: DoneFn) => {
+      const postData = postDataRaw.map((item) => ({
+        id: item.id,
+        data: postAdapterService.formatDateFromFirebase(item.data)
+      }))
+
+
+      postService.getPostsList().subscribe((data) => {
+        expect(data).toEqual(postData)
+        done()
+      })
+    })
   })
 });

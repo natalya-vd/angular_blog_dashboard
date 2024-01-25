@@ -14,4 +14,48 @@
       </div>
     </div>
   </div>
+
+  <div class="row my-5">
+    <div class="col-md-12">
+      <div class="card shadow-effect">
+        <div class="card-body">
+          <table class="table row-border hover">
+            <colgroup>
+              <col span="1" style="width: 10px;">
+              <col span="1" style="width: 200px;">
+              <col span="1" style="width: 200px;">
+              <col span="1" style="width: 300px;">
+              <col span="1" style="width: auto;">
+              <col span="1" style="width: auto;">
+              <col span="1" style="width: auto;">
+            </colgroup>
+
+            <thead>
+              <tr>
+                <th>№</th>
+                <th>Post Image</th>
+                <th>Title</th>
+                <th>Excerpt</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let post of posts; let i = index">
+                <td>{{ i+1 }}</td>
+                <td> <img [src]="post.data.postImgPath" class="img img-fluid"> </td>
+                <td> {{post.data.title}} </td>
+                <td> {{post.data.excerpt}} </td>
+                <td> {{post.data.category.category}} </td>
+                <td> {{post.data.createdAt | date}} </td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

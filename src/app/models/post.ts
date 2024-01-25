@@ -1,3 +1,8 @@
+interface Timestamp {
+  seconds: number
+  nanoseconds: number
+}
+
 export interface Post {
   title: string
   permalink: string
@@ -11,10 +16,19 @@ export interface Post {
   isFeatured: boolean
   views: number
   status: string
-  createdAt: Date
+  createdAt: Date | number
 }
 
 export interface PostFromFirebase {
   id: string
   data: Post
+}
+
+export interface DataFromFirebase extends Omit<Post, 'createdAt'> {
+  createdAt : Timestamp
+}
+
+export interface PostFromFirebaseRaw {
+  id: string
+  data: DataFromFirebase
 }
