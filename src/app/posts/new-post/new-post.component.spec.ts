@@ -3,17 +3,30 @@ import {HttpClientTestingModule} from '@angular/common/http/testing'
 
 import { NewPostComponent } from './new-post.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { findEl, findEls, setFieldValue } from 'src/app/spec-helpers/element.spec-helper';
+import { findEl, findEls, markFieldAsTouched, setFieldValue, uploadFile } from 'src/app/spec-helpers/element.spec-helper';
 import { CategoryService } from 'src/app/services/category/category.service';
 import { CategoryFromFirebase } from 'src/app/models/category';
 import { of } from 'rxjs';
 import { AngularEditorModule } from '@kolkov/angular-editor';
+import { PostService } from 'src/app/services/post/post.service';
+import { Post } from 'src/app/models/post';
 
 describe('NewPostComponent', () => {
   let component: NewPostComponent;
   let fixture: ComponentFixture<NewPostComponent>;
   let categoryServiceSpy: jasmine.SpyObj<CategoryService>
+  let postServiceSpy: jasmine.SpyObj<PostService>
   let categoriesData: CategoryFromFirebase[] = []
+  let postData: Post
+
+  function fillForm(file: File) {
+    setFieldValue(fixture, 'title', postData.title);
+      setFieldValue(fixture, 'permalink', postData.permalink);
+      setFieldValue(fixture, 'categoryId', postData.category.categoryId);
+      setFieldValue(fixture, 'excerpt', postData.excerpt);
+      component.postForm.controls['content'].setValue(postData.content)
+      uploadFile(file, fixture, 'image-preview')
+  }
 
   beforeEach(() => {
     categoriesData = [
@@ -30,8 +43,24 @@ describe('NewPostComponent', () => {
         data: {category: 'Category 3'}
       },
     ]
+    postData = {
+      title: 'Cool title',
+      permalink: 'Cool-title',
+      category: {
+        categoryId: categoriesData[0].id,
+        category: categoriesData[0].data.category
+      },
+      postImgPath: '',
+      excerpt: 'excerpt jkdjkjfdkg fkdjfkjfkfdjkgjkfdj fkdkfdkfkdfkdkfdflkdlfkdfkfldklf',
+      content: 'content',
+      isFeatured: false,
+      views: 0,
+      status: 'new',
+      createdAt: new Date()
+    }
 
     const categoryServiceSpyObj = jasmine.createSpyObj('CategoryService', ['getCategoriesList'])
+    const postServiceSpyObj = jasmine.createSpyObj('PostService', ['uploadImage'])
 
     TestBed
     .configureTestingModule({
@@ -46,12 +75,17 @@ describe('NewPostComponent', () => {
         {
           provide: CategoryService,
           useValue: categoryServiceSpyObj
+        },
+        {
+          provide: PostService,
+          useValue: postServiceSpyObj
         }
       ]
     })
     .compileComponents();
 
     categoryServiceSpy = TestBed.inject(CategoryService) as jasmine.SpyObj<CategoryService>
+    postServiceSpy = TestBed.inject(PostService) as jasmine.SpyObj<PostService>
 
     fixture = TestBed.createComponent(NewPostComponent);
     component = fixture.componentInstance;
@@ -96,9 +130,31 @@ describe('NewPostComponent', () => {
     })
   })
 
-  xdescribe('onSubmit()', () => {
-    it('', () => {
-      //Проверить сам метод отправки формы бэк
+  describe('onSubmit()', () => {
+    it('should do not call method postService uploadImage if form is invalid', async () => {
+      await component.onSubmit()
+
+      expect(postServiceSpy.uploadImage).not.toHaveBeenCalled()
+    })
+
+    it('should call method postService uploadImage if form is valid', () => {
+      const mockFile = new File([''], 'filename', { type: 'jpg' });
+      // setFieldValue(fixture, 'title', postData.title);
+      // setFieldValue(fixture, 'permalink', postData.permalink);
+      // setFieldValue(fixture, 'categoryId', postData.category.categoryId);
+      // setFieldValue(fixture, 'excerpt', postData.excerpt);
+      // component.postForm.controls['content'].setValue(postData.content)
+      // uploadFile(mockFile, fixture, 'image-preview')
+      fillForm(mockFile)
+
+      findEl(fixture, 'form').triggerEventHandler('submit', {});
+
+      fixture.detectChanges();
+
+      expect(postServiceSpy.uploadImage).toHaveBeenCalledTimes(1)
+      expect(postServiceSpy.uploadImage).toHaveBeenCalledWith(component.selectedImg, {
+        ...postData, createdAt: jasmine.objectContaining(postData.createdAt)
+      })
     })
   })
 
@@ -138,21 +194,28 @@ describe('NewPostComponent', () => {
       expect(elements.length).toBe(categoriesData.length);
     })
 
-    xit('should disabled button when invalid form', () => {
-      // Когда форма не заполнена кнопка задизейблена
+    it('should disabled button when invalid form', () => {
+      const button = findEl(fixture, 'button-save').nativeElement as HTMLButtonElement;
+
+      expect(button.disabled).toBe(true);
     })
 
-    xit('should submit form when valid data', () => {
-      //Заполняю форму. Должен вызваться метод onSubmit. Кнопка должна быть незадизейблинная
-      // https://testing-angular.com/testing-complex-forms/#test-setup
-    })
+    it('should submit form when valid data', () => {
+      const onSubmitSpy = spyOn(component, 'onSubmit')
+      const button = findEl(fixture, 'button-save').nativeElement as HTMLButtonElement;
+      const mockFile = new File([''], 'filename', { type: 'jpg' });
+      fillForm(mockFile);
 
-    xit('does not submit an invalid form', () => {
-      //Если форма невалидная, то не должен вызываться метод отправки формы
+      findEl(fixture, 'form').triggerEventHandler('submit', {});
+      fixture.detectChanges();
+
+      expect(button.disabled).toBe(false);
+      expect(onSubmitSpy).toHaveBeenCalledTimes(1)
     })
 
     xit('marks fields as required', () => {
       //Проверяю какие поля обязательные и что если они не заполнены (и было касание поля), то выдается сообщение с ошибкой
+      // https://testing-angular.com/testing-complex-forms/#required-fields
     })
 
     xit('marks fields with minLength', ()=>{

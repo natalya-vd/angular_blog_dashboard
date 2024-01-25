@@ -9,6 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 
 import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 
 import {environment} from 'src/environments/environment'
@@ -36,6 +37,7 @@ import { NewPostComponent } from './posts/new-post/new-post.component';
     BrowserModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFirestoreModule,
     AngularFireStorageModule,
     FormsModule,
     ReactiveFormsModule,

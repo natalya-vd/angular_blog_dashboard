@@ -1,90 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
 import { CategoryService } from './category.service';
-import { of } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Category, CategoryFromFirebase } from 'src/app/models/category';
+import { CategoryFromFirebase } from 'src/app/models/category';
+import { AngularFirestoreCollectionMock, AngularFirestoreDocumentMock, createFirestoreMock } from 'src/app/spec-helpers/firestore-mock';
 
-class AngularFirestoreDocumentMock {
-  update(data: Category) {
-    return new Promise((resolve, reject) => {
-      if(data.category === 'Error') {
-        return reject('Error')
-      }
 
-      return resolve({id: '1'})
-    })
-  }
-
-  delete(): Promise<void> {
-    return Promise.resolve();
-  }
-}
-
-class AngularFirestoreCollectionMock {
-  snapshotChanges() {
-    return of([
-      {
-        payload: {
-          doc: {
-            id: '1',
-            data() {
-              return {category: 'Category 1'}
-            }
-          }
-        },
-        type: "added"
-      },
-      {
-        payload: {
-          doc: {
-            id: '2',
-            data() {
-              return {category: 'Category 2'}
-            }
-          }
-        },
-        type: "added"
-      },
-      {
-        payload: {
-          doc: {
-            id: '3',
-            data() {
-              return {category: 'Category 3'}
-            }
-          }
-        },
-        type: "added"
-      },
-    ])
-  }
-
-  add(data: Category) {
-    return new Promise((resolve, reject) => {
-      if(data.category === 'Error') {
-        return reject('Error')
-      }
-
-      return resolve({id: '1'})
-    })
-  }
-
-  doc(_id: string) {
-    return new AngularFirestoreDocumentMock()
-  }
-}
-
-class AngularFirestoreMock {
-  collection(_path: string) {
-    return new AngularFirestoreCollectionMock()
-  }
-
-  doc(_id: string) {
-    return new AngularFirestoreDocumentMock()
-  }
-}
 
 describe('CategoryService', () => {
   let categoryService: CategoryService;
@@ -115,7 +37,7 @@ describe('CategoryService', () => {
         CategoryService,
         {
           provide: AngularFirestore,
-          useClass: AngularFirestoreMock
+          useValue: createFirestoreMock(categoriesData)
         },
         {
           provide: ToastrService,
@@ -155,11 +77,12 @@ describe('CategoryService', () => {
 
     it('should call console.log for error add', async () => {
       const spyLog = spyOn(window.console, 'log')
+      spyOn(AngularFirestoreCollectionMock.prototype, 'add').and.throwError('Error')
 
       await categoryService.saveData({category: 'Error'})
 
       expect(spyLog).toHaveBeenCalledTimes(1);
-      expect(spyLog).toHaveBeenCalledWith('Error');
+      expect(spyLog).toHaveBeenCalledWith(new Error('Error'));
     })
   })
 
@@ -205,7 +128,7 @@ describe('CategoryService', () => {
     it('should call console.log when error add', async() => {
       const spyLog = spyOn(window.console, 'log')
 
-      await categoryService.updateData('1', {category: 'Error'})
+      await categoryService.updateData('10', {category: 'Error'})
 
       expect(spyLog).toHaveBeenCalledTimes(1);
       expect(spyLog).toHaveBeenCalledWith('Error');

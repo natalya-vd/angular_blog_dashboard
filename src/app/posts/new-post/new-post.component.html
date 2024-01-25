@@ -4,7 +4,7 @@
       <h3 class="text-primary-theme">Add New Post</h3>
       <p class="mb-5 text-theme">You can add your new post here</p>
 
-      <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="postForm" (ngSubmit)="onSubmit()" data-testid="form">
         <div class="row">
           <div class="col-md-7">
             <div class="card shadow-effect">
@@ -40,7 +40,7 @@
 
                 <div>
                   <label>Excerpt</label>
-                  <textarea cols="30" rows="10" class="form-control" formControlName="excerpt"
+                  <textarea cols="30" rows="10" class="form-control" data-testid="excerpt" formControlName="excerpt"
                     [ngClass]="{'is-invalid': formControls['excerpt'].touched && formControls['excerpt'].invalid}"></textarea>
 
                   <div *ngIf="formControls['excerpt'].touched && formControls['excerpt'].invalid">
@@ -61,7 +61,7 @@
               <div class="card-body">
                 <div class="mb-2">
                   <label for="">Please Select a post category</label>
-                  <select class="form-select" formControlName="category"
+                  <select class="form-select" formControlName="category" data-testid="categoryId"
                     [ngClass]="{'is-invalid': formControls['category'].touched && formControls['category'].invalid}">
                     <option selected disabled>Please select a category</option>
                     <option *ngFor="let category of categories" [value]="category.id" data-testid="option-category">
@@ -99,7 +99,8 @@
               <div class="card-body">
                 <div>
                   <label>Content</label>
-                  <angular-editor placeholder="Add your content here" formControlName="content"></angular-editor>
+                  <angular-editor placeholder="Add your content here" formControlName="content"
+                    data-testid="content"></angular-editor>
 
                   <div *ngIf="formControls['content'].touched && formControls['content'].invalid">
                     <div class="alert alert-danger" *ngIf="formControls['content'].errors?.['required']">
@@ -111,7 +112,8 @@
             </div>
 
             <div class="col-md-12 text-center my-5 d-flex justify-content-center">
-              <button type="submit" class="btn btn-info btn-theme" [disabled]="postForm.invalid">Save Post</button>
+              <button type="submit" class="btn btn-info btn-theme" [disabled]="postForm.invalid"
+                data-testid="button-save">Save Post</button>
               <button type="button" class="btn btn-warning ms-3 text-white" routerLink="/posts">Back To Post</button>
             </div>
           </div>

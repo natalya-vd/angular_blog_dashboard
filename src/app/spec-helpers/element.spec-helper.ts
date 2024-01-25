@@ -44,6 +44,20 @@ export function makeClickEvent(
   };
 }
 
+export function uploadFile<T>(
+  file: File,
+  fixture: ComponentFixture<T>,
+  testId: string
+  ) {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    const element = findEl(fixture, testId);
+    const inputFile: HTMLInputElement = element.nativeElement;
+    inputFile.files = dataTransfer.files;
+
+    dispatchFakeEvent(inputFile, 'input')
+}
+
 export function setFieldElementValue(
   element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
   value: string,
@@ -82,3 +96,7 @@ export function expectText<T>(
   const actualText = element.nativeElement.textContent;
   expect(actualText).toBe(text);
 }
+
+export function markFieldAsTouched (element: DebugElement) {
+  dispatchFakeEvent(element.nativeElement, 'blur');
+};

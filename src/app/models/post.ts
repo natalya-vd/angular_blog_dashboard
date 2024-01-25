@@ -13,3 +13,8 @@ export interface Post {
   status: string
   createdAt: Date
 }
+
+export interface PostFromFirebase {
+  id: string
+  data: Post
+}

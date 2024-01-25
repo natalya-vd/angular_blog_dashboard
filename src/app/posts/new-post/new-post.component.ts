@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CategoryFromFirebase } from 'src/app/models/category';
 import { Post } from 'src/app/models/post';
 import { CategoryService } from 'src/app/services/category/category.service';
+import { PostService } from 'src/app/services/post/post.service';
 
 @Component({
   selector: 'app-new-post',
@@ -10,13 +11,18 @@ import { CategoryService } from 'src/app/services/category/category.service';
   styleUrls: ['./new-post.component.css']
 })
 export class NewPostComponent implements OnInit {
-  imgSrc: any = './assets/placeholder-image.png';
+  defaultImg = './assets/placeholder-image.png';
+  imgSrc: any = this.defaultImg;
   selectedImg: any;
   categories: CategoryFromFirebase[] = [];
 
   postForm: FormGroup
 
-  constructor(private categoryService: CategoryService, private formBuilder: FormBuilder) {
+  constructor(
+    private categoryService: CategoryService,
+    private formBuilder: FormBuilder,
+    private postService: PostService
+  ) {
     this.postForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(10)]],
       permalink: [{value: '', disabled: true}, Validators.required],
@@ -57,7 +63,7 @@ export class NewPostComponent implements OnInit {
     }
   }
 
-  onSubmit() {
+  async onSubmit() {
     if(this.postForm.invalid) return
 
     const category = this.categories.find((category) => category.id === this.postForm.value.category)
@@ -78,6 +84,9 @@ export class NewPostComponent implements OnInit {
       createdAt: new Date()
     }
 
-    console.log(postData)
+    await this.postService.uploadImage(this.selectedImg, postData)
+
+    this.postForm.reset()
+    this.imgSrc = this.defaultImg
   }
 }
