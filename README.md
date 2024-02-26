@@ -1,6 +1,21 @@
 # AngularBlogDashboard
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.6.
+## Системные требования
+
+- Angular CLI version >= 16.2.6
+- Node.js version >= 18
+
+## Установка
+
+- Склонировать репозиторий
+- Установить глобально Angular CLI
+- Установить зависимости `npm i`
+
+## Запуск приложения
+
+- Дев разработка `ng serve`
+- Собрать для прода `ng build`
+- Запустить unit тесты `ng test`
 
 ## Development server
 

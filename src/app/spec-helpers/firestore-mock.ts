@@ -22,12 +22,16 @@ export class AngularFirestoreDocumentMock {
         return reject('Error')
       }
 
-      return resolve({id: '1'})
+      return resolve({id: this.id})
     })
   }
 
   delete(): Promise<void> {
     return Promise.resolve();
+  }
+
+  valueChanges() {
+    return of(this.data.find((item) => item.id === this.id)?.data)
   }
 }
 
@@ -97,9 +101,7 @@ export class AngularFireStorageReferenceMock {
 
 export class AngularFireStorageMock {
   upload(path: string, _data: any) {
-    return new Promise((resolve) => {
-      return resolve(path)
-    })
+    return Promise.resolve({})
   }
 
   ref(path: string) {

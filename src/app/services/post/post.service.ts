@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/compat/storage';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Observable, map } from 'rxjs';
+import { Observable, from, map, of, switchMap } from 'rxjs';
 
 import { DataFromFirebase, Post, PostFromFirebase } from 'src/app/models/post';
 import { PostAdapterService } from './post.adapter.service';
@@ -22,22 +22,14 @@ export class PostService {
     private postAdapterService: PostAdapterService
   ) { }
 
-  async uploadImage(selectedImage: any, postData: Post): Promise<void> {
-    try {
-      const filePath = `postImg/${Date.now()}`
+  uploadImage(selectedImage: any) {
+    const filePath = `postImg/${Date.now()}`;
+    const uploadTask: AngularFireUploadTask = this.storage.upload(
+      filePath,
+      selectedImage,
+    );
 
-      await this.storage.upload(filePath, selectedImage)
-
-      this.storage
-        .ref(filePath)
-        .getDownloadURL()
-        .subscribe(url => {
-          postData.postImgPath = url
-          this.saveData(postData)
-        })
-    } catch(err) {
-      console.log(err)
-    }
+    return this.getDownloadUrl$(uploadTask, filePath);
   }
 
   async saveData(postData: Post): Promise<void> {
@@ -65,5 +57,38 @@ export class PostService {
           return {id, data}
         })
       }))
+  }
+
+  getOnePost(id: string | undefined) {
+    return id
+      ? this.firestore
+        .doc<DataFromFirebase>(`${this.keyCollection}/${id}`)
+        .valueChanges()
+        .pipe(map(val => {
+          return val && this.postAdapterService.formatDateFromFirebase(val)
+        }))
+      : of(undefined)
+  }
+
+  async updatePost(id: string, postData: Post): Promise<void> {
+    try {
+      await this.firestore
+      .doc<Post>(`${this.keyCollection}/${id}`)
+      .update(postData)
+
+      this.toastrService.success('Data Update Successfully!');
+      this.router.navigate(['/posts']);
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
+  private getDownloadUrl$(
+    uploadTask: AngularFireUploadTask,
+    path: string,
+  ): Observable<string> {
+    return from(uploadTask).pipe(
+      switchMap((_) => this.storage.ref(path).getDownloadURL()),
+    );
   }
 }

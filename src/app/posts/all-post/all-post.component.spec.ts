@@ -6,6 +6,7 @@ import { PostService } from 'src/app/services/post/post.service';
 import { PostFromFirebase, PostFromFirebaseRaw } from 'src/app/models/post';
 import { createPostsDataFromFirebaseRaw } from 'src/app/spec-helpers/post.data';
 import { PostAdapterService } from 'src/app/services/post/post.adapter.service';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AllPostComponent', () => {
   let component: AllPostComponent;
@@ -23,6 +24,7 @@ describe('AllPostComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [AllPostComponent],
+      imports: [RouterTestingModule],
       providers: [
         PostAdapterService,
         {
@@ -38,11 +40,11 @@ describe('AllPostComponent', () => {
 
     fixture = TestBed.createComponent(AllPostComponent);
     component = fixture.componentInstance;
-    postServiceSpy.getPostsList.and.returnValue(of(postData));
     postData = postDataRaw.map((item) => ({
       id: item.id,
       data: postAdapterService.formatDateFromFirebase(item.data)
     }))
+    postServiceSpy.getPostsList.and.returnValue(of(postData));
 
     fixture.detectChanges();
   });

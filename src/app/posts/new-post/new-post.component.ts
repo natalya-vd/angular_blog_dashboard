@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { switchMap } from 'rxjs';
 import { CategoryFromFirebase } from 'src/app/models/category';
 import { Post } from 'src/app/models/post';
 import { CategoryService } from 'src/app/services/category/category.service';
@@ -15,28 +17,68 @@ export class NewPostComponent implements OnInit {
   imgSrc: any = this.defaultImg;
   selectedImg: any;
   categories: CategoryFromFirebase[] = [];
+  post: Post | undefined;
+  mode: 'add' | 'edit' = 'add';
+  postId: string | undefined
 
-  postForm: FormGroup
+  postForm!: FormGroup
 
   constructor(
     private categoryService: CategoryService,
     private formBuilder: FormBuilder,
-    private postService: PostService
+    private postService: PostService,
+    private route: ActivatedRoute
   ) {
-    this.postForm = this.formBuilder.group({
-      title: ['', [Validators.required, Validators.minLength(10)]],
-      permalink: [{value: '', disabled: true}, Validators.required],
-      excerpt: ['', [Validators.required, Validators.minLength(50)]],
-      category: ['', Validators.required],
-      postImg: ['', Validators.required],
-      content: ['', Validators.required]
-    })
+    this.route
+      .queryParams
+      .pipe(
+        switchMap(params => {
+          this.postId = params['id']
+
+          return this.postService
+          .getOnePost(this.postId)
+        })
+      )
+      .subscribe(post => {
+        this.post = post
+
+        this.postForm = this.formBuilder.group({
+          title: [ this.post?.title ?? '', [Validators.required, Validators.minLength(10)]],
+          permalink: [{value: this.post?.permalink ?? '', disabled: true}, Validators.required],
+          excerpt: [this.post?.excerpt ?? '', [Validators.required, Validators.minLength(50)]],
+          category: [this.post?.category.categoryId ?? '', Validators.required],
+          postImg: ['', Validators.required],
+          content: [this.post?.content ?? '', Validators.required]
+        })
+
+        this.imgSrc = this.post?.postImgPath || this.defaultImg
+
+        if(post) {
+          this.mode = 'edit'
+        }
+      })
   }
 
   ngOnInit(): void {
     this.categoryService.getCategoriesList().subscribe(val => {
       this.categories = val
     })
+  }
+
+  get title() {
+    const statuses = {
+      add: 'Add New Post',
+      edit: 'Edit Post'
+    }
+    return statuses[this.mode] ?? ''
+  }
+
+  get titleButton() {
+    const statuses = {
+      add: 'Save Post',
+      edit: 'Update Post'
+    }
+    return statuses[this.mode] ?? ''
   }
 
   get formControls() {
@@ -63,7 +105,7 @@ export class NewPostComponent implements OnInit {
     }
   }
 
-  async onSubmit() {
+  onSubmit() {
     if(this.postForm.invalid) return
 
     const category = this.categories.find((category) => category.id === this.postForm.value.category)
@@ -84,8 +126,22 @@ export class NewPostComponent implements OnInit {
       createdAt: new Date()
     }
 
-    await this.postService.uploadImage(this.selectedImg, postData)
+    this.postService
+      .uploadImage(this.selectedImg)
+      .subscribe(async (url) => {
+        postData.postImgPath = url
 
+        if(this.mode === 'add') {
+          await this.postService.saveData(postData)
+        } else if (this.mode === 'edit' && this.postId) {
+          await this.postService.updatePost(this.postId, postData)
+        }
+
+        this.clearForm()
+      })
+  }
+
+  private clearForm() {
     this.postForm.reset()
     this.imgSrc = this.defaultImg
   }

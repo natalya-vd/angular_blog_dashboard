@@ -1,11 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ToastrService } from 'ngx-toastr';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 
 import { PostService } from './post.service';
-import { AngularFireStorageMock, AngularFireStorageReferenceMock, AngularFirestoreCollectionMock, createFireStorageMock, createFirestoreMock } from 'src/app/spec-helpers/firestore-mock';
-import { Post, PostFromFirebase, PostFromFirebaseRaw } from 'src/app/models/post';
+import { AngularFireStorageReferenceMock, AngularFirestoreCollectionMock, AngularFirestoreDocumentMock, createFireStorageMock, createFirestoreMock } from 'src/app/spec-helpers/firestore-mock';
+import { Post, PostFromFirebaseRaw } from 'src/app/models/post';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { createPostDataFromForm, createPostsDataFromFirebaseRaw } from 'src/app/spec-helpers/post.data';
@@ -102,46 +102,34 @@ describe('PostService', () => {
   });
 
   describe('uploadImage()', () => {
-    it('should call upload method firebase', async () => {
-      const spyFireStorage = spyOn(fireStorageMock, 'upload').and.callThrough();
+    it('should call upload method firebase', () => {
+      const spyFireStorage = spyOn(fireStorageMock, 'upload').and.callThrough()
       const mockFile = new File([''], 'filename', { type: 'jpg' });
+      const filePath = `postImg/${Date.now()}`;
 
-      await postService.uploadImage(mockFile, postFormData);
+      postService.uploadImage(mockFile);
 
       expect(spyFireStorage).toHaveBeenCalledTimes(1);
+      expect(spyFireStorage).toHaveBeenCalledWith(jasmine.stringContaining(filePath), mockFile)
     });
 
-    it('should call methods firebase', async () => {
+    it('should call methods firebase', fakeAsync(() => {
       const spyFireStorage = spyOn(fireStorageMock, 'ref').and.callThrough()
       const spyGetDownloadURL = spyOn(AngularFireStorageReferenceMock.prototype, 'getDownloadURL').and.callThrough()
+      const filePath = `postImg/${Date.now()}`;
       const mockFile = new File([''], 'filename', { type: 'jpg' });
+      let result = ''
 
-      await postService.uploadImage(mockFile, postFormData);
+      postService.uploadImage(mockFile).subscribe((path) => {
+        result = path
+      });
+      tick()
 
-      expect(spyFireStorage).toHaveBeenCalledTimes(1);
-      expect(spyGetDownloadURL).toHaveBeenCalledTimes(1);
-
-    });
-
-    it('should call saveData method', async () => {
-      const spySaveData = spyOn(postService, 'saveData').and.callThrough()
-      const mockFile = new File([''], 'filename', { type: 'jpg' });
-
-      await postService.uploadImage(mockFile, postFormData);
-
-      expect(spySaveData).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call console.log for error add', async () => {
-      const spyLog = spyOn(window.console, 'log')
-      spyOn(AngularFireStorageMock.prototype, 'upload').and.throwError('Error')
-      const mockFile = new File([''], 'filename', { type: 'jpg' });
-
-      await postService.uploadImage(mockFile, postFormData);
-
-      expect(spyLog).toHaveBeenCalledTimes(1);
-      expect(spyLog).toHaveBeenCalledWith(new Error('Error'));
-    });
+      expect(result).toBe(filePath)
+      expect(spyFireStorage).toHaveBeenCalledTimes(1)
+      expect(spyFireStorage).toHaveBeenCalledWith(jasmine.stringContaining(filePath))
+      expect(spyGetDownloadURL).toHaveBeenCalledTimes(1)
+    }));
   })
 
   describe('getPostsList()', () => {
@@ -166,6 +154,86 @@ describe('PostService', () => {
         expect(data).toEqual(postData)
         done()
       })
+    })
+  })
+
+  describe('getOnePost()', () => {
+    it('should call firestore methods when getOnePost("1")', () => {
+      const spyFirebase = spyOn(firestoreMock, 'doc').and.callThrough()
+      const spyValueChanges = spyOn(AngularFirestoreDocumentMock.prototype, 'valueChanges').and.callThrough()
+
+      postService.getOnePost('1')
+
+      expect(spyFirebase).toHaveBeenCalledTimes(1);
+      expect(spyValueChanges).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not call firestore methods when getOnePost(undefined)', () => {
+      const spyFirebase = spyOn(firestoreMock, 'doc').and.callThrough()
+      const spyValueChanges = spyOn(AngularFirestoreDocumentMock.prototype, 'valueChanges').and.callThrough()
+
+      postService.getOnePost(undefined)
+
+      expect(spyFirebase).not.toHaveBeenCalledTimes(1);
+      expect(spyValueChanges).not.toHaveBeenCalledTimes(1);
+    });
+
+    it('should return undefined when getOnePost(undefined)', (done) => {
+      postService
+        .getOnePost(undefined)
+        .subscribe((value) => {
+          done()
+
+          expect(value).toBe(undefined)
+        })
+    })
+
+    it('should return Post when getOnePost("1")', (done) => {
+      const postData = postAdapterService.formatDateFromFirebase(postDataRaw[0].data)
+
+      postService
+        .getOnePost('1')
+        .subscribe((value) => {
+          done()
+
+          expect(value).toEqual(postData)
+        })
+    })
+  })
+
+  describe('updatePost()', () => {
+    it('should call firebase methods', async() => {
+      const spyFirebase = spyOn(firestoreMock, 'doc').and.callThrough()
+      const spyUpdate = spyOn(AngularFirestoreDocumentMock.prototype, 'update').and.callThrough()
+
+      await postService.updatePost('1', postFormData)
+
+      expect(spyFirebase).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledWith(postFormData)
+    })
+
+    it('should call toastrService.success when success update', async() => {
+      await postService.updatePost('1', postFormData)
+
+      expect(toastrServiceSpy.success).toHaveBeenCalledTimes(1);
+      expect(toastrServiceSpy.success).toHaveBeenCalledWith('Data Update Successfully!');
+    })
+
+    it('should navigate in "posts" for success update', async () => {
+      await postService.saveData(postFormData)
+
+      expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/posts']);
+    });
+
+    it('should call console.log when error update', async() => {
+      const spyLog = spyOn(window.console, 'log')
+
+      await postService.updatePost('10', postFormData)
+
+      expect(spyLog).toHaveBeenCalledTimes(1);
+      expect(spyLog).toHaveBeenCalledWith('Error');
     })
   })
 });

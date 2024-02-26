@@ -1,10 +1,10 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-md-12 text-center">
-      <h3 class="text-primary-theme">Add New Post</h3>
-      <p class="mb-5 text-theme">You can add your new post here</p>
+      <h3 class="text-primary-theme" data-testid="form-title">{{title}}</h3>
+      <p class="mb-5 text-theme">You can {{title}} here</p>
 
-      <form [formGroup]="postForm" (ngSubmit)="onSubmit()" data-testid="form">
+      <form *ngIf="postForm" [formGroup]="postForm" (ngSubmit)="onSubmit()" data-testid="form">
         <div class="row">
           <div class="col-md-7">
             <div class="card shadow-effect">
@@ -113,7 +113,7 @@
 
             <div class="col-md-12 text-center my-5 d-flex justify-content-center">
               <button type="submit" class="btn btn-info btn-theme" [disabled]="postForm.invalid"
-                data-testid="button-save">Save Post</button>
+                data-testid="button-save">{{titleButton}}</button>
               <button type="button" class="btn btn-warning ms-3 text-white" routerLink="/posts">Back To Post</button>
             </div>
           </div>
