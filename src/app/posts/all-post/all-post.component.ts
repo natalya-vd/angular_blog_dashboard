@@ -19,4 +19,20 @@ export class AllPostComponent implements OnInit {
         this.posts = val
       })
   }
+
+  async onDelete(post: PostFromFirebase) {
+    const isDelete = confirm('Do you want to delete post?')
+
+    if(!isDelete) return
+
+    try {
+      if(post.data.postImgPath && post.data.postImgPath !== '') {
+        await this.postService.deleteImage(post.data.postImgPath);
+      }
+
+      await this.postService.deletePost(post.id)
+    } catch(err) {
+      console.log(err)
+    }
+  }
 }

@@ -11,7 +11,7 @@ export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
           categoryId: '1',
           category: 'Category 1'
         },
-        postImgPath: '',
+        postImgPath: 'postImgPath_1',
         excerpt: 'excerpt',
         content: 'content',
         isFeatured: false,
@@ -32,7 +32,7 @@ export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
           categoryId: '2',
           category: 'Category 2'
         },
-        postImgPath: '',
+        postImgPath: 'postImgPath_2',
         excerpt: 'excerpt',
         content: 'content',
         isFeatured: false,
@@ -53,7 +53,7 @@ export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
           categoryId: '3',
           category: 'Category 3'
         },
-        postImgPath: '',
+        postImgPath: 'postImgPath_3',
         excerpt: 'excerpt',
         content: 'content',
         isFeatured: false,

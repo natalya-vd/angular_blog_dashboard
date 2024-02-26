@@ -53,6 +53,8 @@
                 <td>
                   <button type="button" class="btn btn-sm btn-warning" routerLink="/posts/new"
                     [queryParams]="{id: post.id}">Edit</button>
+                  <button type="button" class="btn btn-sm btn-danger ms-2" (click)="onDelete(post)"
+                    data-testid="button-delete">Delete</button>
                 </td>
               </tr>
             </tbody>

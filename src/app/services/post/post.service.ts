@@ -32,6 +32,10 @@ export class PostService {
     return this.getDownloadUrl$(uploadTask, filePath);
   }
 
+  async deleteImage(postImg: string): Promise<void> {
+    await this.storage.storage.refFromURL(postImg).delete()
+  }
+
   async saveData(postData: Post): Promise<void> {
     try {
       await this.firestore
@@ -40,6 +44,18 @@ export class PostService {
 
       this.toastrService.success('Data Insert Successfully')
       this.router.navigate(['/posts'])
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
+  async deletePost(id: string): Promise<void> {
+    try {
+      await this.firestore
+      .doc<DataFromFirebase>(`${this.keyCollection}/${id}`)
+      .delete()
+
+      this.toastrService.warning('Post Deleted!')
     } catch(err) {
       console.log(err)
     }

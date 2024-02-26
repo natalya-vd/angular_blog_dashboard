@@ -97,9 +97,19 @@ export class AngularFireStorageReferenceMock {
   getDownloadURL() {
     return of(this.path)
   }
+
+  delete() {
+    return Promise.resolve()
+  }
 }
 
 export class AngularFireStorageMock {
+  readonly storage = {
+    refFromURL(url: string) {
+      return new AngularFireStorageReferenceMock(url)
+    }
+  }
+
   upload(path: string, _data: any) {
     return Promise.resolve({})
   }

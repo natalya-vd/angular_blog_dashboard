@@ -25,7 +25,7 @@ describe('PostService', () => {
     postDataRaw = createPostsDataFromFirebaseRaw()
     postFormData = createPostDataFromForm()
 
-    const toastrServiceSpyObj = jasmine.createSpyObj('ToastrService', ['success'])
+    const toastrServiceSpyObj = jasmine.createSpyObj('ToastrService', ['success', 'warning'])
     const routerSpyObj = jasmine.createSpyObj('Router', ['navigate'])
 
     TestBed.configureTestingModule({
@@ -235,5 +235,47 @@ describe('PostService', () => {
       expect(spyLog).toHaveBeenCalledTimes(1);
       expect(spyLog).toHaveBeenCalledWith('Error');
     })
+  })
+
+  describe('deleteImage()', () => {
+    it('should call fireStorage methods', async() => {
+      const spyRefFromURL = spyOn(fireStorageMock.storage, 'refFromURL').and.callThrough()
+      const spyDelete = spyOn(AngularFireStorageReferenceMock.prototype, 'delete').and.callThrough();
+
+      await postService.deleteImage('url');
+
+      expect(spyRefFromURL).toHaveBeenCalledTimes(1);
+      expect(spyDelete).toHaveBeenCalledTimes(1);
+    })
+  })
+
+  describe('deletePost()', () => {
+    it('should call firebase methods', async() => {
+      const spyFirebase = spyOn(firestoreMock, 'doc').and.callThrough()
+      const spyDelete = spyOn(AngularFirestoreDocumentMock.prototype, 'delete').and.callThrough();
+
+      await postService.deletePost('1');
+
+      expect(spyFirebase).toHaveBeenCalledTimes(1);
+      expect(spyDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call toastrService.success when success delete', async() => {
+      await postService.deletePost('1');
+
+      expect(toastrServiceSpy.warning).toHaveBeenCalledTimes(1);
+      expect(toastrServiceSpy.warning).toHaveBeenCalledWith('Post Deleted!');
+    });
+
+    it('should call console.log when error delete', async() => {
+      const spyLog = spyOn(window.console, 'log')
+      spyOn(AngularFirestoreDocumentMock.prototype, 'delete').and.throwError('Error');
+
+      await postService.deletePost('1');
+
+      expect(spyLog).toHaveBeenCalledTimes(1);
+      expect(spyLog).toHaveBeenCalledWith(new Error('Error'));
+
+    });
   })
 });
