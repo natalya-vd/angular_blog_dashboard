@@ -10,20 +10,58 @@
             <p>Please login to your admin account to post a new blog post</p>
           </div>
 
-          <form class="row">
-            <div class="mb-2">
-              <input type="email" class="form-control" placeholder="Email" />
+          <form class="row" #loginForm="ngForm">
+            <div class="mb-3">
+              <input
+                type="email"
+                class="form-control"
+                [ngClass]="{
+                  'is-invalid': email.touched && email.invalid
+                }"
+                placeholder="Email"
+                name="email"
+                #email="ngModel"
+                ngModel
+                required
+                email />
+
+              <div
+                class="alert alert-danger"
+                *ngIf="email.touched && email.invalid">
+                <div *ngIf="email.errors?.['required']">Email is required</div>
+                <div *ngIf="email.errors?.['email']">
+                  Please enter a valid email address
+                </div>
+              </div>
             </div>
 
-            <div class="mb-2">
+            <div class="mb-3">
               <input
                 type="password"
                 class="form-control"
-                placeholder="Password" />
+                [ngClass]="{
+                  'is-invalid': password.touched && password.invalid
+                }"
+                placeholder="Password"
+                name="password"
+                #password="ngModel"
+                ngModel
+                required />
+
+              <p
+                class="alert alert-danger"
+                *ngIf="password.touched && password.invalid">
+                Email is required
+              </p>
             </div>
 
             <div class="d-grid">
-              <button class="btn btn-info btn-block btn-theme">Login</button>
+              <button
+                type="submit"
+                class="btn btn-info btn-block btn-theme"
+                [disabled]="loginForm.invalid">
+                Login
+              </button>
             </div>
           </form>
         </div>
