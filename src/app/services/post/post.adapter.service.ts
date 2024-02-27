@@ -1,15 +1,15 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
-import { DataFromFirebase, PostFromFirebase } from "src/app/models/post";
+import { DataFromFirebase, PostFromFirebase } from 'src/app/models/post';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PostAdapterService {
   formatDateFromFirebase(data: DataFromFirebase): PostFromFirebase['data'] {
     return {
       ...data,
-      createdAt: data.createdAt.seconds * 1000
-    }
+      createdAt: data.createdAt.seconds * 1000,
+    };
   }
 }

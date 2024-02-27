@@ -1,29 +1,29 @@
-import { of } from "rxjs";
+import { of } from 'rxjs';
 
 interface IDataItem {
-  id: string
-  data: Record<string, any>
+  id: string;
+  data: Record<string, any>;
 }
 
 export class AngularFirestoreDocumentMock {
-  data: IDataItem[]
-  id: string
+  data: IDataItem[];
+  id: string;
 
   constructor(data: IDataItem[], id: string) {
-    const splitId = id.split('/')
-    this.id = splitId[splitId.length - 1]
+    const splitId = id.split('/');
+    this.id = splitId[splitId.length - 1];
 
-    this.data = data
+    this.data = data;
   }
 
   update<T>(_data: T) {
     return new Promise((resolve, reject) => {
-      if(!this.data.some(item => item.id === this.id)) {
-        return reject('Error')
+      if (!this.data.some(item => item.id === this.id)) {
+        return reject('Error');
       }
 
-      return resolve({id: this.id})
-    })
+      return resolve({ id: this.id });
+    });
   }
 
   delete(): Promise<void> {
@@ -31,94 +31,94 @@ export class AngularFirestoreDocumentMock {
   }
 
   valueChanges() {
-    return of(this.data.find((item) => item.id === this.id)?.data)
+    return of(this.data.find(item => item.id === this.id)?.data);
   }
 }
 
 export class AngularFirestoreCollectionMock {
-  data: IDataItem[]
+  data: IDataItem[];
   constructor(data: IDataItem[]) {
-    this.data = data
+    this.data = data;
   }
 
   snapshotChanges() {
-    const responseData = this.data.map((item) => ({
+    const responseData = this.data.map(item => ({
       payload: {
         doc: {
           id: item.id,
           data() {
-            return item.data
-          }
-        }
+            return item.data;
+          },
+        },
       },
-      type: "added"
-    }))
+      type: 'added',
+    }));
 
-    return of(responseData)
+    return of(responseData);
   }
 
   add<T>(_data: T) {
-    return new Promise((resolve) => {
-      return resolve({id: '1'})
-    })
+    return new Promise(resolve => {
+      return resolve({ id: '1' });
+    });
   }
 
   doc(id: string) {
-    return new AngularFirestoreDocumentMock(this.data, id)
+    return new AngularFirestoreDocumentMock(this.data, id);
   }
 }
 
 class AngularFirestoreMock {
-  data: IDataItem[]
+  data: IDataItem[];
   constructor(data: IDataItem[]) {
-    this.data = data
+    this.data = data;
   }
 
   collection(_path: string) {
-    return new AngularFirestoreCollectionMock(this.data)
+    return new AngularFirestoreCollectionMock(this.data);
   }
 
   doc(id: string) {
-    return new AngularFirestoreDocumentMock(this.data, id)
+    return new AngularFirestoreDocumentMock(this.data, id);
   }
 }
 
 export const createFirestoreMock = (data: IDataItem[]) => {
-  return new AngularFirestoreMock(data)
-}
+  return new AngularFirestoreMock(data);
+};
 
 //---------- Storage --------
 export class AngularFireStorageReferenceMock {
-  path: string
+  path: string;
   constructor(path: string) {
-    this.path = path
+    this.path = path;
   }
 
   getDownloadURL() {
-    return of(this.path)
+    return of(this.path);
   }
 
   delete() {
-    return Promise.resolve()
+    return Promise.resolve();
   }
 }
 
 export class AngularFireStorageMock {
   readonly storage = {
     refFromURL(url: string) {
-      return new AngularFireStorageReferenceMock(url)
-    }
-  }
+      return new AngularFireStorageReferenceMock(url);
+    },
+  };
 
   upload(path: string, _data: any) {
-    return Promise.resolve({})
+    return Promise.resolve({});
   }
 
   ref(path: string) {
-    return new AngularFireStorageReferenceMock(path)
+    return new AngularFireStorageReferenceMock(path);
   }
 }
 
 export const createFireStorageMock = () => {
-  return new AngularFireStorageMock()
-}
+  return new AngularFireStorageMock();
+};

@@ -7,25 +7,30 @@ import { map } from 'rxjs/operators';
 import { Category, CategoryFromFirebase } from 'src/app/models/category';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoryService {
   keyCollection = 'categories';
 
-  constructor(private firestore: AngularFirestore, private toastrService: ToastrService) { }
+  constructor(
+    private firestore: AngularFirestore,
+    private toastrService: ToastrService
+  ) {}
 
   getCategoriesList(): Observable<CategoryFromFirebase[]> {
     return this.firestore
       .collection<Category>(this.keyCollection)
       .snapshotChanges()
-      .pipe(map((actions) => {
-        return actions.map(a => {
-          const data = a.payload.doc.data()
-          const id = a.payload.doc.id
+      .pipe(
+        map(actions => {
+          return actions.map(a => {
+            const data = a.payload.doc.data();
+            const id = a.payload.doc.id;
 
-          return {id, data}
+            return { id, data };
+          });
         })
-      }))
+      );
   }
 
   async saveData(data: Category): Promise<void> {
@@ -42,12 +47,12 @@ export class CategoryService {
   async updateData(id: string, newValue: Category): Promise<void> {
     try {
       await this.firestore
-      .doc<Category>(`${this.keyCollection}/${id}`)
-      .update(newValue)
+        .doc<Category>(`${this.keyCollection}/${id}`)
+        .update(newValue);
 
       this.toastrService.success('Data Update Successfully!');
-    } catch(err) {
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -58,8 +63,8 @@ export class CategoryService {
         .delete();
 
       this.toastrService.success('Data Deleted!');
-    } catch(err) {
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
   }
 }

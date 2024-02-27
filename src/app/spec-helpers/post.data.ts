@@ -1,4 +1,4 @@
-import { Post, PostFromFirebaseRaw } from "../models/post"
+import { Post, PostFromFirebaseRaw } from '../models/post';
 
 export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
   return [
@@ -9,7 +9,7 @@ export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
         permalink: 'Title-1',
         category: {
           categoryId: '1',
-          category: 'Category 1'
+          category: 'Category 1',
         },
         postImgPath: 'postImgPath_1',
         excerpt: 'excerpt',
@@ -19,9 +19,9 @@ export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
         status: 'new',
         createdAt: {
           nanoseconds: 831000000,
-          seconds: 1705590854
-        }
-      }
+          seconds: 1705590854,
+        },
+      },
     },
     {
       id: '2',
@@ -30,7 +30,7 @@ export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
         permalink: 'Title-2',
         category: {
           categoryId: '2',
-          category: 'Category 2'
+          category: 'Category 2',
         },
         postImgPath: 'postImgPath_2',
         excerpt: 'excerpt',
@@ -40,9 +40,9 @@ export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
         status: 'new',
         createdAt: {
           nanoseconds: 831000000,
-          seconds: 1705590854
-        }
-      }
+          seconds: 1705590854,
+        },
+      },
     },
     {
       id: '3',
@@ -51,7 +51,7 @@ export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
         permalink: 'Title-3',
         category: {
           categoryId: '3',
-          category: 'Category 3'
+          category: 'Category 3',
         },
         postImgPath: 'postImgPath_3',
         excerpt: 'excerpt',
@@ -61,12 +61,12 @@ export const createPostsDataFromFirebaseRaw = (): PostFromFirebaseRaw[] => {
         status: 'new',
         createdAt: {
           nanoseconds: 831000000,
-          seconds: 1705590854
-        }
-      }
+          seconds: 1705590854,
+        },
+      },
     },
-  ]
-}
+  ];
+};
 
 export const createPostDataFromForm = (): Post => {
   return {
@@ -74,14 +74,15 @@ export const createPostDataFromForm = (): Post => {
     permalink: 'Cool-title',
     category: {
       categoryId: '1',
-      category: 'Category 1'
+      category: 'Category 1',
     },
     postImgPath: '',
-    excerpt: 'excerpt jkdjkjfdkg fkdjfkjfkfdjkgjkfdj fkdkfdkfkdfkdkfdflkdlfkdfkfldklf',
+    excerpt:
+      'excerpt jkdjkjfdkg fkdjfkjfkfdjkgjkfdj fkdkfdkfkdfkdkfdflkdlfkdfkfldklf',
     content: 'content',
     isFeatured: false,
     views: 0,
     status: 'new',
-    createdAt: new Date()
-  }
-}
+    createdAt: new Date(),
+  };
+};

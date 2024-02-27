@@ -1,34 +1,34 @@
 interface Timestamp {
-  seconds: number
-  nanoseconds: number
+  seconds: number;
+  nanoseconds: number;
 }
 
 export interface Post {
-  title: string
-  permalink: string
+  title: string;
+  permalink: string;
   category: {
-    categoryId: string
-    category: string
-  }
-  postImgPath: string
-  excerpt: string
-  content: string
-  isFeatured: boolean
-  views: number
-  status: string
-  createdAt: Date | number
+    categoryId: string;
+    category: string;
+  };
+  postImgPath: string;
+  excerpt: string;
+  content: string;
+  isFeatured: boolean;
+  views: number;
+  status: string;
+  createdAt: Date | number;
 }
 
 export interface PostFromFirebase {
-  id: string
-  data: Post
+  id: string;
+  data: Post;
 }
 
 export interface DataFromFirebase extends Omit<Post, 'createdAt'> {
-  createdAt : Timestamp
+  createdAt: Timestamp;
 }
 
 export interface PostFromFirebaseRaw {
-  id: string
-  data: DataFromFirebase
+  id: string;
+  data: DataFromFirebase;
 }

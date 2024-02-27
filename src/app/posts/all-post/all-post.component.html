@@ -7,8 +7,18 @@
           <p>From here you can manager your blog posts</p>
 
           <div class="d-flex justify-content-center">
-            <button type="button" class="btn btn-info btn-theme" routerLink="/posts/new">Add New Post</button>
-            <button type="button" class="btn btn-warning ms-2 text-white" routerLink="/">Back To Dashboard</button>
+            <button
+              type="button"
+              class="btn btn-info btn-theme"
+              routerLink="/posts/new">
+              Add New Post
+            </button>
+            <button
+              type="button"
+              class="btn btn-warning ms-2 text-white"
+              routerLink="/">
+              Back To Dashboard
+            </button>
           </div>
         </div>
       </div>
@@ -21,13 +31,13 @@
         <div class="card-body">
           <table class="table row-border hover">
             <colgroup>
-              <col span="1" style="width: 10px;">
-              <col span="1" style="width: 200px;">
-              <col span="1" style="width: 200px;">
-              <col span="1" style="width: 300px;">
-              <col span="1" style="width: auto;">
-              <col span="1" style="width: auto;">
-              <col span="1" style="width: auto;">
+              <col span="1" style="width: 10px" />
+              <col span="1" style="width: 200px" />
+              <col span="1" style="width: 200px" />
+              <col span="1" style="width: 300px" />
+              <col span="1" style="width: auto" />
+              <col span="1" style="width: auto" />
+              <col span="1" style="width: auto" />
             </colgroup>
 
             <thead>
@@ -43,23 +53,45 @@
 
             <tbody>
               <tr *ngFor="let post of posts; let i = index">
-                <td>{{ i+1 }}</td>
-                <td> <img [src]="post.data.postImgPath" class="img img-fluid"> </td>
-                <td> {{post.data.title}} </td>
-                <td> {{post.data.category.category}} </td>
-                <td> {{post.data.createdAt | date}} </td>
+                <td>{{ i + 1 }}</td>
                 <td>
-                  <button type="button" class="btn btn-sm btn-warning" routerLink="/posts/new"
-                    [queryParams]="{id: post.id}">Edit</button>
-                  <button type="button" class="btn btn-sm btn-danger ms-2" (click)="onDelete(post)"
-                    data-testid="button-delete">Delete</button>
+                  <img [src]="post.data.postImgPath" class="img img-fluid" />
+                </td>
+                <td>{{ post.data.title }}</td>
+                <td>{{ post.data.category.category }}</td>
+                <td>{{ post.data.createdAt | date }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-warning"
+                    routerLink="/posts/new"
+                    [queryParams]="{ id: post.id }">
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger ms-2"
+                    (click)="onDelete(post)"
+                    data-testid="button-delete">
+                    Delete
+                  </button>
 
-                  <button *ngIf="!post.data.isFeatured" type="button" class="btn btn-sm btn-success ms-2"
-                    (click)="onFeatured(post.id, true)" data-testid="button-featured">Mark
-                    Featured</button>
-                  <button *ngIf="post.data.isFeatured" type="button" class="btn btn-sm btn-info ms-2"
-                    (click)="onFeatured(post.id, false)" data-testid="button-nonFeatured">Remove
-                    Featured</button>
+                  <button
+                    *ngIf="!post.data.isFeatured"
+                    type="button"
+                    class="btn btn-sm btn-success ms-2"
+                    (click)="onFeatured(post.id, true)"
+                    data-testid="button-featured">
+                    Mark Featured
+                  </button>
+                  <button
+                    *ngIf="post.data.isFeatured"
+                    type="button"
+                    class="btn btn-sm btn-info ms-2"
+                    (click)="onFeatured(post.id, false)"
+                    data-testid="button-nonFeatured">
+                    Remove Featured
+                  </button>
                 </td>
               </tr>
             </tbody>

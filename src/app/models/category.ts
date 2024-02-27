@@ -1,8 +1,8 @@
 export interface Category {
-  category: string
+  category: string;
 }
 
 export interface CategoryFromFirebase {
-  id: string
-  data: Category
+  id: string;
+  data: Category;
 }

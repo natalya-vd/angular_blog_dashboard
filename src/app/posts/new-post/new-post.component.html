@@ -1,25 +1,45 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-md-12 text-center">
-      <h3 class="text-primary-theme" data-testid="form-title">{{title}}</h3>
-      <p class="mb-5 text-theme">You can {{title}} here</p>
+      <h3 class="text-primary-theme" data-testid="form-title">{{ title }}</h3>
+      <p class="mb-5 text-theme">You can {{ title }} here</p>
 
-      <form *ngIf="postForm" [formGroup]="postForm" (ngSubmit)="onSubmit()" data-testid="form">
+      <form
+        *ngIf="postForm"
+        [formGroup]="postForm"
+        (ngSubmit)="onSubmit()"
+        data-testid="form">
         <div class="row">
           <div class="col-md-7">
             <div class="card shadow-effect">
               <div class="card-body">
                 <div class="mb-2">
                   <label>Title</label>
-                  <input type="text" class="form-control" (input)="onTitleChange($event)" data-testid="title"
+                  <input
+                    type="text"
+                    class="form-control"
+                    (input)="onTitleChange($event)"
+                    data-testid="title"
                     formControlName="title"
-                    [ngClass]="{'is-invalid': formControls['title'].touched && formControls['title'].invalid}">
+                    [ngClass]="{
+                      'is-invalid':
+                        formControls['title'].touched &&
+                        formControls['title'].invalid
+                    }" />
 
-                  <div *ngIf="formControls['title'].touched && formControls['title'].invalid">
-                    <div class="alert alert-danger" *ngIf="formControls['title'].errors?.['required']">
+                  <div
+                    *ngIf="
+                      formControls['title'].touched &&
+                      formControls['title'].invalid
+                    ">
+                    <div
+                      class="alert alert-danger"
+                      *ngIf="formControls['title'].errors?.['required']">
                       Title is required
                     </div>
-                    <div class="alert alert-danger" *ngIf="formControls['title'].errors?.['minlength']">
+                    <div
+                      class="alert alert-danger"
+                      *ngIf="formControls['title'].errors?.['minlength']">
                       Title must be atleast 10 characters long
                     </div>
                   </div>
@@ -27,12 +47,26 @@
 
                 <div class="mb-2">
                   <label>Permalink</label>
-                  <input name="permalink" type="text" class="form-control" data-testid="permalink"
+                  <input
+                    name="permalink"
+                    type="text"
+                    class="form-control"
+                    data-testid="permalink"
                     formControlName="permalink"
-                    [ngClass]="{'is-invalid': formControls['permalink'].touched && formControls['permalink'].invalid}">
+                    [ngClass]="{
+                      'is-invalid':
+                        formControls['permalink'].touched &&
+                        formControls['permalink'].invalid
+                    }" />
 
-                  <div *ngIf="formControls['permalink'].touched && formControls['permalink'].invalid">
-                    <div class="alert alert-danger" *ngIf="formControls['permalink'].errors?.['required']">
+                  <div
+                    *ngIf="
+                      formControls['permalink'].touched &&
+                      formControls['permalink'].invalid
+                    ">
+                    <div
+                      class="alert alert-danger"
+                      *ngIf="formControls['permalink'].errors?.['required']">
                       Permalink is required
                     </div>
                   </div>
@@ -40,14 +74,31 @@
 
                 <div>
                   <label>Excerpt</label>
-                  <textarea cols="30" rows="10" class="form-control" data-testid="excerpt" formControlName="excerpt"
-                    [ngClass]="{'is-invalid': formControls['excerpt'].touched && formControls['excerpt'].invalid}"></textarea>
+                  <textarea
+                    cols="30"
+                    rows="10"
+                    class="form-control"
+                    data-testid="excerpt"
+                    formControlName="excerpt"
+                    [ngClass]="{
+                      'is-invalid':
+                        formControls['excerpt'].touched &&
+                        formControls['excerpt'].invalid
+                    }"></textarea>
 
-                  <div *ngIf="formControls['excerpt'].touched && formControls['excerpt'].invalid">
-                    <div class="alert alert-danger" *ngIf="formControls['excerpt'].errors?.['required']">
+                  <div
+                    *ngIf="
+                      formControls['excerpt'].touched &&
+                      formControls['excerpt'].invalid
+                    ">
+                    <div
+                      class="alert alert-danger"
+                      *ngIf="formControls['excerpt'].errors?.['required']">
                       Excerpt is required
                     </div>
-                    <div class="alert alert-danger" *ngIf="formControls['excerpt'].errors?.['minlength']">
+                    <div
+                      class="alert alert-danger"
+                      *ngIf="formControls['excerpt'].errors?.['minlength']">
                       Excerpt must be atleast 50 characters long
                     </div>
                   </div>
@@ -61,29 +112,60 @@
               <div class="card-body">
                 <div class="mb-2">
                   <label for="">Please Select a post category</label>
-                  <select class="form-select" formControlName="category" data-testid="categoryId"
-                    [ngClass]="{'is-invalid': formControls['category'].touched && formControls['category'].invalid}">
+                  <select
+                    class="form-select"
+                    formControlName="category"
+                    data-testid="categoryId"
+                    [ngClass]="{
+                      'is-invalid':
+                        formControls['category'].touched &&
+                        formControls['category'].invalid
+                    }">
                     <option selected disabled>Please select a category</option>
-                    <option *ngFor="let category of categories" [value]="category.id" data-testid="option-category">
-                      {{category.data.category}}
+                    <option
+                      *ngFor="let category of categories"
+                      [value]="category.id"
+                      data-testid="option-category">
+                      {{ category.data.category }}
                     </option>
                   </select>
 
-                  <div *ngIf="formControls['category'].touched && formControls['category'].invalid">
-                    <div class="alert alert-danger" *ngIf="formControls['category'].errors?.['required']">
+                  <div
+                    *ngIf="
+                      formControls['category'].touched &&
+                      formControls['category'].invalid
+                    ">
+                    <div
+                      class="alert alert-danger"
+                      *ngIf="formControls['category'].errors?.['required']">
                       Please select a post category.
                     </div>
                   </div>
                 </div>
                 <div>
                   <label>Post Image</label>
-                  <img [src]="imgSrc" class="form-control img-fluid">
-                  <input type="file" class="form-control" accept="image/*" (change)="showPreview($event)"
-                    formControlName="postImg" data-testid="image-preview"
-                    [ngClass]="{'is-invalid': formControls['postImg'].touched && formControls['postImg'].invalid}">
+                  <img [src]="imgSrc" class="form-control img-fluid" />
+                  <input
+                    type="file"
+                    class="form-control"
+                    accept="image/*"
+                    (change)="showPreview($event)"
+                    formControlName="postImg"
+                    data-testid="image-preview"
+                    [ngClass]="{
+                      'is-invalid':
+                        formControls['postImg'].touched &&
+                        formControls['postImg'].invalid
+                    }" />
 
-                  <div *ngIf="formControls['postImg'].touched && formControls['postImg'].invalid">
-                    <div class="alert alert-danger" *ngIf="formControls['postImg'].errors?.['required']">
+                  <div
+                    *ngIf="
+                      formControls['postImg'].touched &&
+                      formControls['postImg'].invalid
+                    ">
+                    <div
+                      class="alert alert-danger"
+                      *ngIf="formControls['postImg'].errors?.['required']">
                       Image is required
                     </div>
                   </div>
@@ -99,11 +181,19 @@
               <div class="card-body">
                 <div>
                   <label>Content</label>
-                  <angular-editor placeholder="Add your content here" formControlName="content"
+                  <angular-editor
+                    placeholder="Add your content here"
+                    formControlName="content"
                     data-testid="content"></angular-editor>
 
-                  <div *ngIf="formControls['content'].touched && formControls['content'].invalid">
-                    <div class="alert alert-danger" *ngIf="formControls['content'].errors?.['required']">
+                  <div
+                    *ngIf="
+                      formControls['content'].touched &&
+                      formControls['content'].invalid
+                    ">
+                    <div
+                      class="alert alert-danger"
+                      *ngIf="formControls['content'].errors?.['required']">
                       Content is required
                     </div>
                   </div>
@@ -111,10 +201,21 @@
               </div>
             </div>
 
-            <div class="col-md-12 text-center my-5 d-flex justify-content-center">
-              <button type="submit" class="btn btn-info btn-theme" [disabled]="postForm.invalid"
-                data-testid="button-save">{{titleButton}}</button>
-              <button type="button" class="btn btn-warning ms-3 text-white" routerLink="/posts">Back To Post</button>
+            <div
+              class="col-md-12 text-center my-5 d-flex justify-content-center">
+              <button
+                type="submit"
+                class="btn btn-info btn-theme"
+                [disabled]="postForm.invalid"
+                data-testid="button-save">
+                {{ titleButton }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-warning ms-3 text-white"
+                routerLink="/posts">
+                Back To Post
+              </button>
             </div>
           </div>
         </div>

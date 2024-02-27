@@ -8,17 +8,17 @@ import { NewPostComponent } from './posts/new-post/new-post.component';
 import { LoginComponent } from './auth/login/login.component';
 
 const routes: Routes = [
-  {path: '', component: DashboardComponent},
-  {path: 'login', component: LoginComponent},
-  
-  {path: 'categories', component: CategoriesComponent},
+  { path: '', component: DashboardComponent },
+  { path: 'login', component: LoginComponent },
 
-  {path: 'posts', component: AllPostComponent},
-  {path: 'posts/new', component: NewPostComponent},
+  { path: 'categories', component: CategoriesComponent },
+
+  { path: 'posts', component: AllPostComponent },
+  { path: 'posts/new', component: NewPostComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

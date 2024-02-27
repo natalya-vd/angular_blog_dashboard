@@ -5,21 +5,20 @@ import { HeaderComponent } from './layouts/header/header.component';
 import { FooterComponent } from './layouts/footer/footer.component';
 
 describe('AppComponent', () => {
-  let fixture: ComponentFixture<AppComponent>
-  let app: AppComponent
+  let fixture: ComponentFixture<AppComponent>;
+  let app: AppComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      declarations: [AppComponent, HeaderComponent, FooterComponent]
-    })
+      declarations: [AppComponent, HeaderComponent, FooterComponent],
+    });
 
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
   });
 
   it('should create the app', () => {
-
     expect(app).toBeTruthy();
   });
 });

@@ -10,7 +10,7 @@ import { PostService } from 'src/app/services/post/post.service';
 @Component({
   selector: 'app-new-post',
   templateUrl: './new-post.component.html',
-  styleUrls: ['./new-post.component.css']
+  styleUrls: ['./new-post.component.css'],
 })
 export class NewPostComponent implements OnInit {
   defaultImg = './assets/placeholder-image.png';
@@ -19,9 +19,9 @@ export class NewPostComponent implements OnInit {
   categories: CategoryFromFirebase[] = [];
   post: Post | undefined;
   mode: 'add' | 'edit' = 'add';
-  postId: string | undefined
+  postId: string | undefined;
 
-  postForm!: FormGroup
+  postForm!: FormGroup;
 
   constructor(
     private categoryService: CategoryService,
@@ -29,93 +29,102 @@ export class NewPostComponent implements OnInit {
     private postService: PostService,
     private route: ActivatedRoute
   ) {
-    this.route
-      .queryParams
+    this.route.queryParams
       .pipe(
         switchMap(params => {
-          this.postId = params['id']
+          this.postId = params['id'];
 
-          return this.postService
-          .getOnePost(this.postId)
+          return this.postService.getOnePost(this.postId);
         })
       )
       .subscribe(post => {
-        this.post = post
+        this.post = post;
 
         this.postForm = this.formBuilder.group({
-          title: [ this.post?.title ?? '', [Validators.required, Validators.minLength(10)]],
-          permalink: [{value: this.post?.permalink ?? '', disabled: true}, Validators.required],
-          excerpt: [this.post?.excerpt ?? '', [Validators.required, Validators.minLength(50)]],
+          title: [
+            this.post?.title ?? '',
+            [Validators.required, Validators.minLength(10)],
+          ],
+          permalink: [
+            { value: this.post?.permalink ?? '', disabled: true },
+            Validators.required,
+          ],
+          excerpt: [
+            this.post?.excerpt ?? '',
+            [Validators.required, Validators.minLength(50)],
+          ],
           category: [this.post?.category.categoryId ?? '', Validators.required],
           postImg: ['', Validators.required],
-          content: [this.post?.content ?? '', Validators.required]
-        })
+          content: [this.post?.content ?? '', Validators.required],
+        });
 
-        this.imgSrc = this.post?.postImgPath || this.defaultImg
+        this.imgSrc = this.post?.postImgPath || this.defaultImg;
 
-        if(post) {
-          this.mode = 'edit'
+        if (post) {
+          this.mode = 'edit';
         }
-      })
+      });
   }
 
   ngOnInit(): void {
     this.categoryService.getCategoriesList().subscribe(val => {
-      this.categories = val
-    })
+      this.categories = val;
+    });
   }
 
   get title() {
     const statuses = {
       add: 'Add New Post',
-      edit: 'Edit Post'
-    }
-    return statuses[this.mode] ?? ''
+      edit: 'Edit Post',
+    };
+    return statuses[this.mode] ?? '';
   }
 
   get titleButton() {
     const statuses = {
       add: 'Save Post',
-      edit: 'Update Post'
-    }
-    return statuses[this.mode] ?? ''
+      edit: 'Update Post',
+    };
+    return statuses[this.mode] ?? '';
   }
 
   get formControls() {
-    return this.postForm.controls
+    return this.postForm.controls;
   }
 
   onTitleChange($event: Event) {
-    const input = $event.target as HTMLInputElement
-    const title = input.value
-    this.postForm.controls['permalink'].setValue(title.replace(/\s/g, '-'))
+    const input = $event.target as HTMLInputElement;
+    const title = input.value;
+    this.postForm.controls['permalink'].setValue(title.replace(/\s/g, '-'));
   }
 
   showPreview($event: Event) {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       this.imgSrc = e.target?.result;
-    }
+    };
 
-    const input = $event.target as HTMLInputElement
+    const input = $event.target as HTMLInputElement;
 
-    if(input.files) {
-      reader.readAsDataURL(input.files[0])
-      this.selectedImg = input.files[0]
+    if (input.files) {
+      reader.readAsDataURL(input.files[0]);
+      this.selectedImg = input.files[0];
     }
   }
 
   onSubmit() {
-    if(this.postForm.invalid) return
+    if (this.postForm.invalid) return;
 
-    const category = this.categories.find((category) => category.id === this.postForm.value.category)
+    const category = this.categories.find(
+      category => category.id === this.postForm.value.category
+    );
 
     const postData: Post = {
       title: this.postForm.value.title,
       permalink: this.postForm.getRawValue().permalink,
       category: {
         categoryId: category?.id ?? '',
-        category: category?.data.category ?? ''
+        category: category?.data.category ?? '',
       },
       postImgPath: '',
       excerpt: this.postForm.value.excerpt,
@@ -123,26 +132,24 @@ export class NewPostComponent implements OnInit {
       isFeatured: false,
       views: 0,
       status: 'new',
-      createdAt: new Date()
-    }
+      createdAt: new Date(),
+    };
 
-    this.postService
-      .uploadImage(this.selectedImg)
-      .subscribe(async (url) => {
-        postData.postImgPath = url
+    this.postService.uploadImage(this.selectedImg).subscribe(async url => {
+      postData.postImgPath = url;
 
-        if(this.mode === 'add') {
-          await this.postService.saveData(postData)
-        } else if (this.mode === 'edit' && this.postId) {
-          await this.postService.updatePost(this.postId, postData)
-        }
+      if (this.mode === 'add') {
+        await this.postService.saveData(postData);
+      } else if (this.mode === 'edit' && this.postId) {
+        await this.postService.updatePost(this.postId, postData);
+      }
 
-        this.clearForm()
-      })
+      this.clearForm();
+    });
   }
 
   private clearForm() {
-    this.postForm.reset()
-    this.imgSrc = this.defaultImg
+    this.postForm.reset();
+    this.imgSrc = this.defaultImg;
   }
 }
