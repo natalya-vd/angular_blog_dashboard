@@ -50,7 +50,8 @@ a {
 }
 
 input[type="text"],
-input[type="email"] {
+input[type="email"],
+input[type="password"] {
   height: 60px;
   width: 100%;
   padding-left: 20px;
@@ -61,5 +62,4 @@ input[type="email"] {
   border: none;
   background-color: var(--primary-color);
   color: var(--bs-white);
-  font-size: 13px;
 }
