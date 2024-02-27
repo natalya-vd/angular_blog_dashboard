@@ -122,3 +122,23 @@ export class AngularFireStorageMock {
 export const createFireStorageMock = () => {
   return new AngularFireStorageMock();
 };
+
+//---------- AngularFireAuth --------
+export class AngularFireAuthMock {
+  signInWithEmailAndPassword(email: string, _password: string) {
+    return Promise.resolve({
+      kind: 'kind',
+      localId: 'localId',
+      email,
+      displayName: '',
+      idToken: 'idToken',
+      registered: true,
+      refreshToken: 'refreshToken',
+      expiresIn: '3600',
+    });
+  }
+}
+
+export const createAngularFireAuthMock = () => {
+  return new AngularFireAuthMock();
+};

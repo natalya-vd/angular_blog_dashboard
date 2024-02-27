@@ -85,8 +85,8 @@ export function expectText<T>(
   text: string
 ): void {
   const element = findEl(fixture, testId);
-  const actualText = element.nativeElement.textContent;
-  expect(actualText).toBe(text);
+  const actualText = element.nativeElement.textContent as string;
+  expect(actualText.trim()).toBe(text);
 }
 
 export function markFieldAsTouched(element: DebugElement) {

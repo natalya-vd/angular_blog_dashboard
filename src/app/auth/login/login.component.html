@@ -10,7 +10,11 @@
             <p>Please login to your admin account to post a new blog post</p>
           </div>
 
-          <form class="row" #loginForm="ngForm">
+          <form
+            class="row"
+            #loginForm="ngForm"
+            (ngSubmit)="onSubmit()"
+            data-testid="form">
             <div class="mb-3">
               <input
                 type="email"
@@ -23,7 +27,8 @@
                 #email="ngModel"
                 ngModel
                 required
-                email />
+                email
+                data-testid="email" />
 
               <div
                 class="alert alert-danger"
@@ -46,7 +51,8 @@
                 name="password"
                 #password="ngModel"
                 ngModel
-                required />
+                required
+                data-testid="password" />
 
               <p
                 class="alert alert-danger"
@@ -59,7 +65,8 @@
               <button
                 type="submit"
                 class="btn btn-info btn-block btn-theme"
-                [disabled]="loginForm.invalid">
+                [disabled]="loginForm.invalid"
+                data-testid="button-submit">
                 Login
               </button>
             </div>

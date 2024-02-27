@@ -6,7 +6,6 @@ import { CategoriesComponent } from './categories.component';
 import { CategoryService } from '../services/category/category.service';
 import { CategoryFromFirebase } from '../models/category';
 import {
-  click,
   expectText,
   findEl,
   findEls,
