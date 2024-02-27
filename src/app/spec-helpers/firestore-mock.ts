@@ -125,6 +125,8 @@ export const createFireStorageMock = () => {
 
 //---------- AngularFireAuth --------
 export class AngularFireAuthMock {
+  authState = of({});
+
   signInWithEmailAndPassword(email: string, _password: string) {
     return Promise.resolve({
       kind: 'kind',

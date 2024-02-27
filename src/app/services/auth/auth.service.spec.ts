@@ -4,18 +4,24 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 import { AuthService } from './auth.service';
 import { createAngularFireAuthMock } from 'src/app/spec-helpers/firestore-mock';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let toastrServiceSpy: jasmine.SpyObj<ToastrService>;
+  let routerSpy: jasmine.SpyObj<Router>;
   let firestoreAuthMock: AngularFireAuth;
 
   beforeEach(() => {
     const toastrServiceSpyObj = jasmine.createSpyObj('ToastrService', [
       'success',
+      'error',
     ]);
+    const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
       providers: [
         AuthService,
         {
@@ -26,6 +32,10 @@ describe('AuthService', () => {
           provide: ToastrService,
           useValue: toastrServiceSpyObj,
         },
+        {
+          provide: Router,
+          useValue: routerSpyObj,
+        },
       ],
     });
 
@@ -34,6 +44,7 @@ describe('AuthService', () => {
     toastrServiceSpy = TestBed.inject(
       ToastrService
     ) as jasmine.SpyObj<ToastrService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   it('should be created', () => {
@@ -67,18 +78,27 @@ describe('AuthService', () => {
       );
     });
 
+    it('should navigate in "/" for success add', async () => {
+      const email = 'email@email.com';
+      const password = 'password';
+
+      await authService.login(email, password);
+
+      expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
+
     it('should call console.log for error add', async () => {
-      const spyLog = spyOn(window.console, 'log');
-      spyOn(firestoreAuthMock, 'signInWithEmailAndPassword').and.throwError(
-        'Error'
+      spyOn(firestoreAuthMock, 'signInWithEmailAndPassword').and.returnValue(
+        Promise.reject('Error')
       );
       const email = 'email@email.com';
       const password = 'password';
 
       await authService.login(email, password);
 
-      expect(spyLog).toHaveBeenCalledTimes(1);
-      expect(spyLog).toHaveBeenCalledWith(new Error('Error'));
+      expect(toastrServiceSpy.error).toHaveBeenCalledTimes(1);
+      expect(toastrServiceSpy.error).toHaveBeenCalledWith('Error');
     });
   });
 });

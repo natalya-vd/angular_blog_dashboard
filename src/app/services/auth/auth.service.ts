@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
@@ -8,7 +9,8 @@ import { ToastrService } from 'ngx-toastr';
 export class AuthService {
   constructor(
     private firestoreAuth: AngularFireAuth,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private router: Router
   ) {}
 
   async login(email: string, password: string) {
@@ -16,8 +18,16 @@ export class AuthService {
       await this.firestoreAuth.signInWithEmailAndPassword(email, password);
 
       this.toastrService.success('Logged In Successfully');
+      this.loadUser();
+      this.router.navigate(['/']);
     } catch (err) {
-      console.log(err);
+      this.toastrService.error(err as string);
     }
+  }
+
+  loadUser() {
+    this.firestoreAuth.authState.subscribe(user => {
+      localStorage.setItem('user', JSON.stringify(user));
+    });
   }
 }
