@@ -35,4 +35,12 @@ export class AllPostComponent implements OnInit {
       console.log(err)
     }
   }
+
+  async onFeatured(postId: string, isFeatured: boolean) {
+    const featuredData = {
+      isFeatured
+    }
+
+    await this.postService.markFeatured(postId, featuredData)
+  }
 }

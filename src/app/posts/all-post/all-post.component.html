@@ -35,7 +35,6 @@
                 <th>№</th>
                 <th>Post Image</th>
                 <th>Title</th>
-                <th>Excerpt</th>
                 <th>Category</th>
                 <th>Date</th>
                 <th>Actions</th>
@@ -47,7 +46,6 @@
                 <td>{{ i+1 }}</td>
                 <td> <img [src]="post.data.postImgPath" class="img img-fluid"> </td>
                 <td> {{post.data.title}} </td>
-                <td> {{post.data.excerpt}} </td>
                 <td> {{post.data.category.category}} </td>
                 <td> {{post.data.createdAt | date}} </td>
                 <td>
@@ -55,6 +53,13 @@
                     [queryParams]="{id: post.id}">Edit</button>
                   <button type="button" class="btn btn-sm btn-danger ms-2" (click)="onDelete(post)"
                     data-testid="button-delete">Delete</button>
+
+                  <button *ngIf="!post.data.isFeatured" type="button" class="btn btn-sm btn-success ms-2"
+                    (click)="onFeatured(post.id, true)" data-testid="button-featured">Mark
+                    Featured</button>
+                  <button *ngIf="post.data.isFeatured" type="button" class="btn btn-sm btn-info ms-2"
+                    (click)="onFeatured(post.id, false)" data-testid="button-nonFeatured">Remove
+                    Featured</button>
                 </td>
               </tr>
             </tbody>

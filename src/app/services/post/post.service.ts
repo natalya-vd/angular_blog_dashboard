@@ -99,6 +99,18 @@ export class PostService {
     }
   }
 
+  async markFeatured(id: string, postData: Partial<Post>): Promise<void> {
+    try {
+      await this.firestore
+      .doc<Post>(`${this.keyCollection}/${id}`)
+      .update(postData)
+
+      this.toastrService.info('Featured Status Updated');
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
   private getDownloadUrl$(
     uploadTask: AngularFireUploadTask,
     path: string,

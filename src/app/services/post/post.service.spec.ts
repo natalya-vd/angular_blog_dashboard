@@ -25,7 +25,7 @@ describe('PostService', () => {
     postDataRaw = createPostsDataFromFirebaseRaw()
     postFormData = createPostDataFromForm()
 
-    const toastrServiceSpyObj = jasmine.createSpyObj('ToastrService', ['success', 'warning'])
+    const toastrServiceSpyObj = jasmine.createSpyObj('ToastrService', ['success', 'warning', 'info'])
     const routerSpyObj = jasmine.createSpyObj('Router', ['navigate'])
 
     TestBed.configureTestingModule({
@@ -276,6 +276,40 @@ describe('PostService', () => {
       expect(spyLog).toHaveBeenCalledTimes(1);
       expect(spyLog).toHaveBeenCalledWith(new Error('Error'));
 
+    });
+  })
+
+  describe('markFeatured()', () => {
+    it('should call firebase methods', async() => {
+      const spyFirebase = spyOn(firestoreMock, 'doc').and.callThrough()
+      const spyUpdate = spyOn(AngularFirestoreDocumentMock.prototype, 'update').and.callThrough();
+      const data = {isFeatured: true}
+
+      await postService.markFeatured('1', data);
+
+      expect(spyFirebase).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledWith(data);
+    });
+
+    it('should call toastrService.info when success update', async() => {
+      const data = {isFeatured: true}
+
+      await postService.markFeatured('1', data);
+
+      expect(toastrServiceSpy.info).toHaveBeenCalledTimes(1);
+      expect(toastrServiceSpy.info).toHaveBeenCalledWith('Featured Status Updated');
+    });
+
+    it('should call console.log when error update', async() => {
+      const spyLog = spyOn(window.console, 'log')
+      spyOn(AngularFirestoreDocumentMock.prototype, 'update').and.throwError('Error');
+      const data = {isFeatured: true}
+
+      await postService.markFeatured('1', data);
+
+      expect(spyLog).toHaveBeenCalledTimes(1);
+      expect(spyLog).toHaveBeenCalledWith(new Error('Error'));
     });
   })
 });
