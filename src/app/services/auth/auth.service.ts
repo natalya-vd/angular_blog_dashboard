@@ -24,7 +24,9 @@ export class AuthService {
 
       this.toastrService.success('Logged In Successfully');
       this.loadUser();
+
       this.loggedIn.next(true);
+      this.isLoggedInGuard = true;
       this.router.navigate(['/']);
     } catch (err) {
       this.toastrService.error(err as string);
@@ -36,8 +38,10 @@ export class AuthService {
       await this.firestoreAuth.signOut();
 
       this.toastrService.success('User Logged Out Successfully');
+
       localStorage.removeItem(this.keyLocalStorage);
       this.loggedIn.next(false);
+      this.isLoggedInGuard = false;
       this.router.navigate(['/login']);
     } catch (err) {
       this.toastrService.error(err as string);
