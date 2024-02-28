@@ -10,6 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 export class AuthService {
   private keyLocalStorage = 'user';
   loggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  isLoggedInGuard = false;
 
   constructor(
     private firestoreAuth: AngularFireAuth,
