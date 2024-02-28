@@ -139,6 +139,10 @@ export class AngularFireAuthMock {
       expiresIn: '3600',
     });
   }
+
+  signOut() {
+    return Promise.resolve();
+  }
 }
 
 export const createAngularFireAuthMock = () => {

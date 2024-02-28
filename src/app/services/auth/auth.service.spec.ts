@@ -78,7 +78,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('should navigate in "/" for success add', async () => {
+    it('should navigate in "/" for success login', async () => {
       const email = 'email@email.com';
       const password = 'password';
 
@@ -88,7 +88,18 @@ describe('AuthService', () => {
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 
-    it('should call console.log for error add', async () => {
+    it('should loggedIn is true for success login', async () => {
+      const email = 'email@email.com';
+      const password = 'password';
+
+      await authService.login(email, password);
+
+      authService.loggedIn.subscribe(value => {
+        expect(value).toBe(true);
+      });
+    });
+
+    it('should call toastrService.error for error login', async () => {
       spyOn(firestoreAuthMock, 'signInWithEmailAndPassword').and.returnValue(
         Promise.reject('Error')
       );
@@ -99,6 +110,61 @@ describe('AuthService', () => {
 
       expect(toastrServiceSpy.error).toHaveBeenCalledTimes(1);
       expect(toastrServiceSpy.error).toHaveBeenCalledWith('Error');
+    });
+  });
+
+  describe('logout()', () => {
+    it('should call firebase methods', async () => {
+      const spyFirebase = spyOn(firestoreAuthMock, 'signOut').and.callThrough();
+
+      await authService.logout();
+
+      expect(spyFirebase).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call toastrService.success for success logout', async () => {
+      await authService.logout();
+
+      expect(toastrServiceSpy.success).toHaveBeenCalledTimes(1);
+      expect(toastrServiceSpy.success).toHaveBeenCalledWith(
+        'User Logged Out Successfully'
+      );
+    });
+
+    it('should navigate in "/login" for success logout', async () => {
+      await authService.logout();
+
+      expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
+    });
+
+    it('should loggedIn is false for success logout', async () => {
+      await authService.logout();
+
+      authService.loggedIn.subscribe(value => {
+        expect(value).toBe(false);
+      });
+    });
+
+    it('should call toastrService.error for error logout', async () => {
+      spyOn(firestoreAuthMock, 'signOut').and.returnValue(
+        Promise.reject('Error')
+      );
+
+      await authService.logout();
+
+      expect(toastrServiceSpy.error).toHaveBeenCalledTimes(1);
+      expect(toastrServiceSpy.error).toHaveBeenCalledWith('Error');
+    });
+  });
+
+  describe('isLoggedIn()', () => {
+    it('should return loggedIn.asObservable', () => {
+      const isLoggedIn$ = authService.isLoggedIn();
+
+      isLoggedIn$.subscribe(val => {
+        expect(typeof val).toBe('boolean');
+      });
     });
   });
 });
