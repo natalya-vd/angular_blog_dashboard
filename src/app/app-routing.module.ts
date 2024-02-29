@@ -26,6 +26,7 @@ const routes: Routes = [
   {
     path: 'subscribers',
     component: SubscribersComponent,
+    canActivate: [AuthGuard],
   },
 ];
 

@@ -17,4 +17,12 @@ export class SubscribersComponent implements OnInit {
       this.subscribers = value;
     });
   }
+
+  onDelete(id: string) {
+    const isDelete = confirm('Do you want to delete subscriber?');
+
+    if (isDelete) {
+      this.subService.deleteData(id);
+    }
+  }
 }
