@@ -10,7 +10,7 @@ import { Category, CategoryFromFirebase } from 'src/app/models/category';
   providedIn: 'root',
 })
 export class CategoryService {
-  keyCollection = 'categories';
+  private keyCollection = 'categories';
 
   constructor(
     private firestore: AngularFirestore,
